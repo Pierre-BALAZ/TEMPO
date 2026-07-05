@@ -1,41 +1,28 @@
 /**
- * Marque « Partition d'urgence » : une portée dont les trois têtes de notes
- * représentent les trois phases (régulation, SMUR, hôpital). Version compacte
- * (sans glyphes internes, illisibles en petit) pour l'en-tête ; le logo détaillé
- * avec casque / ambulance / H est dans public/logo.svg et les icônes d'accueil.
+ * Marque « Partition d'urgence » : un triolet de doubles croches (double poutre)
+ * dont les têtes de notes évoquent les trois phases (régulation, SMUR, hôpital).
+ * Version compacte (sans glyphes, illisibles en petit) pour l'en-tête ; le logo
+ * détaillé avec casque / ambulance / H est dans public/logo.svg et les icônes.
  */
 export function Logo({ size = 34, className }: { size?: number; className?: string }) {
-  const lines = [22.8, 27.4, 32, 36.6, 41.2]
+  const INK = '#111827'
+  const lines = [23.8, 28.4, 33, 37.6, 42.2]
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      className={className}
-      role="img"
-      aria-label="Partition d'urgence"
-    >
-      <rect x="0" y="0" width="64" height="64" rx="13" fill="#e11d48" />
+    <svg width={size} height={size} viewBox="0 0 64 64" className={className} role="img" aria-label="Partition d'urgence">
       {lines.map((y, i) => (
-        <line
-          key={i}
-          x1="9"
-          y1={y}
-          x2="55"
-          y2={y}
-          stroke="#ffffff"
-          strokeWidth="1.3"
-          strokeLinecap="round"
-          opacity="0.9"
-        />
+        <line key={i} x1="8" y1={y} x2="56" y2={y} stroke={INK} strokeWidth="1.2" strokeLinecap="round" opacity="0.85" />
       ))}
-      <polygon points="16,15.9 50,18.2 50,21 16,18.7" fill="#ffffff" />
-      <rect x="18.4" y="16" width="1.4" height="14.2" fill="#ffffff" />
-      <rect x="32.4" y="17" width="1.4" height="18.2" fill="#ffffff" />
-      <rect x="45.4" y="18.2" width="1.4" height="21.4" fill="#ffffff" />
-      <circle cx="19" cy="30.2" r="5.2" fill="#ffffff" />
-      <circle cx="33" cy="35.2" r="5.2" fill="#ffffff" />
-      <circle cx="46" cy="39.6" r="5.2" fill="#ffffff" />
+      {/* hampes (côté droit des têtes) */}
+      <rect x="24.5" y="16.1" width="1.4" height="15.5" fill={INK} />
+      <rect x="36.5" y="17.2" width="1.4" height="18.6" fill={INK} />
+      <rect x="48.5" y="18.2" width="1.4" height="21.7" fill={INK} />
+      {/* double poutre, bornée aux hampes extrêmes */}
+      <polygon points="24.5,16.02 49.9,18.28 49.9,20.58 24.5,18.32" fill={INK} />
+      <polygon points="24.5,19.88 49.9,22.14 49.9,24.44 24.5,22.18" fill={INK} />
+      {/* têtes de notes */}
+      <circle cx="20" cy="31.6" r="5.9" fill={INK} />
+      <circle cx="32" cy="35.8" r="5.9" fill={INK} />
+      <circle cx="44" cy="39.9" r="5.9" fill={INK} />
     </svg>
   )
 }

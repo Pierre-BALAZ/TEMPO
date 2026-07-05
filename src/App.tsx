@@ -4,6 +4,7 @@ import { Logo } from './components/Logo'
 import { CaseHeader } from './components/CaseHeader'
 import { RoleSwitcher } from './components/RoleSwitcher'
 import { ShareBar } from './components/ShareBar'
+import { SyncControl } from './components/SyncControl'
 import { ScoreBoard } from './components/ScoreBoard'
 import { GuidedPlayer } from './components/GuidedPlayer'
 import { ActionDetailPanel } from './components/ActionDetailPanel'
@@ -32,7 +33,7 @@ export default function App() {
     <div className="mx-auto flex min-h-full max-w-[1500px] flex-col gap-4 p-3 sm:p-5">
       <header className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <Logo size={30} className="shrink-0 rounded-lg shadow-sm" />
+          <Logo size={34} className="shrink-0" />
           <h1 className="text-xl font-extrabold text-slate-900 sm:text-2xl">
             Partition d’urgence — Traumatisé sévère
           </h1>
@@ -79,6 +80,8 @@ export default function App() {
         </div>
         <ShareBar />
       </div>
+
+      <SyncControl />
 
       <GuidedPlayer />
 

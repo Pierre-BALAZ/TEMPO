@@ -1,49 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 130" role="img" aria-label="Partition d'urgence — logo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 150" role="img" aria-label="Partition d'urgence — logo">
   <title>Partition d'urgence</title>
-  <g stroke="#e11d48">
-    <line x1="12" y1="47" x2="218" y2="47" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
-    <line x1="12" y1="56" x2="218" y2="56" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
-    <line x1="12" y1="65" x2="218" y2="65" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
-    <line x1="12" y1="74" x2="218" y2="74" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
-    <line x1="12" y1="83" x2="218" y2="83" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
+  <g stroke="#111827">
+    <line x1="12" y1="54" x2="218" y2="54" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+    <line x1="12" y1="63" x2="218" y2="63" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+    <line x1="12" y1="72" x2="218" y2="72" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+    <line x1="12" y1="81" x2="218" y2="81" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+    <line x1="12" y1="90" x2="218" y2="90" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
   </g>
 
-  <!-- poutre + hampes -->
-  <polygon points="53,31.7 182,37.1 182,43.1 53,37.7" fill="#e11d48"/>
-  <rect x="60.8" y="31.7" width="2.4" height="29.7" fill="#e11d48"/>
-  <rect x="116.8" y="34.4" width="2.4" height="37.8" fill="#e11d48"/>
-  <rect x="170.8" y="37.1" width="2.4" height="43.2" fill="#e11d48"/>
+  <rect x="73.12" y="38.75" width="2.4" height="30.55" fill="#111827"/>
+  <rect x="124.12" y="40.95" width="2.4" height="36.45" fill="#111827"/>
+  <rect x="175.12" y="43.15" width="2.4" height="42.35" fill="#111827"/>
 
-  <!-- têtes de notes -->
-  <circle cx="62" cy="61.4" r="10.6" fill="#e11d48"/>
-  <circle cx="118" cy="72.2" r="10.6" fill="#e11d48"/>
-  <circle cx="172" cy="80.3" r="10.6" fill="#e11d48"/>
+  <polygon points="73.12,38.7 177.52,43.2 177.52,47.7 73.12,43.2" fill="#111827"/>
+  <polygon points="73.12,46.26 177.52,50.76 177.52,55.26 73.12,50.76" fill="#111827"/>
 
-  <!-- glyphe 1 : casque (régulation) -->
-  <g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round">
-    <path d="M55.4 61 A6.6 6.6 0 0 1 68.6 61"/>
-    <path d="M56.7 63.6 Q58 66.6 60.6 66.6" stroke-width="1.7"/>
+  <circle cx="64" cy="69.3" r="11.52" fill="#111827"/>
+  <circle cx="115" cy="77.4" r="11.52" fill="#111827"/>
+  <circle cx="166" cy="85.5" r="11.52" fill="#111827"/>
+
+  <!-- glyphe 1 : casque (réduit) -->
+  <g transform="translate(64 69.3) scale(0.8) translate(-64 -69.3)">
+    <g fill="none" stroke="#ffffff" stroke-width="2.7" stroke-linecap="round">
+      <path d="M56.4 68.3 A7.6 7.6 0 0 1 71.6 68.3"/>
+      <path d="M57.3 71.4 Q59 75 62 75" stroke-width="2.3"/>
+    </g>
+    <rect x="54.9" y="67" width="3" height="4.8" rx="1.1" fill="#ffffff"/>
+    <rect x="70.1" y="67" width="3" height="4.8" rx="1.1" fill="#ffffff"/>
+    <circle cx="62" cy="75" r="1.5" fill="#ffffff"/>
   </g>
-  <rect x="54.1" y="59" width="2.7" height="5.2" rx="1.1" fill="#ffffff"/>
-  <rect x="67.2" y="59" width="2.7" height="5.2" rx="1.1" fill="#ffffff"/>
-  <circle cx="60.6" cy="66.6" r="1.3" fill="#ffffff"/>
 
-  <!-- glyphe 2 : ambulance (SMUR) -->
-  <rect x="110.4" y="68.4" width="15.2" height="7.2" rx="1.7" fill="#ffffff"/>
-  <rect x="122.2" y="66.6" width="2" height="2" rx="0.5" fill="#ffffff"/>
-  <g fill="#e11d48">
-    <rect x="113.5" y="69.3" width="2.2" height="5.4"/>
-    <rect x="111.8" y="70.9" width="5.6" height="2.2"/>
+  <!-- glyphe 2 : ambulance (réduite) -->
+  <g transform="translate(115 77.4) scale(0.8) translate(-115 -77.4)">
+    <rect x="112.8" y="70.7" width="12.7" height="10.6" rx="1.3" fill="#ffffff"/>
+    <rect x="104.5" y="75.9" width="9.9" height="5.4" rx="1.3" fill="#ffffff"/>
+    <rect x="116.5" y="68.9" width="2.6" height="1.9" rx="0.5" fill="#ffffff"/>
+    <polygon points="105.2,77.0 111.6,77.0 111.6,78.9 105.2,78.9" fill="#111827"/>
+    <g fill="#111827">
+      <rect x="119.25" y="74.2" width="1.7" height="4.9"/>
+      <rect x="117.66" y="75.8" width="4.9" height="1.7"/>
+    </g>
+    <circle cx="109.5" cy="81.6" r="2.44" fill="#ffffff"/>
+    <circle cx="120.7" cy="81.6" r="2.44" fill="#ffffff"/>
+    <circle cx="109.5" cy="81.6" r="1" fill="#111827"/>
+    <circle cx="120.7" cy="81.6" r="1" fill="#111827"/>
   </g>
-  <circle cx="114" cy="76" r="2" fill="#ffffff"/>
-  <circle cx="122.4" cy="76" r="2" fill="#ffffff"/>
-  <circle cx="114" cy="76" r="0.8" fill="#e11d48"/>
-  <circle cx="122.4" cy="76" r="0.8" fill="#e11d48"/>
 
-  <!-- glyphe 3 : hôpital -->
-  <g fill="#ffffff">
-    <rect x="167.9" y="74.3" width="2.4" height="12"/>
-    <rect x="173.7" y="74.3" width="2.4" height="12"/>
-    <rect x="167.9" y="79.1" width="8.2" height="2.4"/>
+  <!-- glyphe 3 : hôpital (réduit) -->
+  <g transform="translate(166 85.5) scale(0.8) translate(-166 -85.5)" fill="#ffffff">
+    <rect x="160.2" y="78" width="2.9" height="15"/>
+    <rect x="168.9" y="78" width="2.9" height="15"/>
+    <rect x="160.2" y="84.1" width="11.6" height="2.9"/>
   </g>
 </svg>

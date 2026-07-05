@@ -1,27 +1,37 @@
 {
-  "name": "util-deprecate",
-  "version": "1.0.2",
-  "description": "The Node.js `util.deprecate()` function with browser support",
-  "main": "node.js",
-  "browser": "browser.js",
+  "name": "project-balaz",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Prototype « partition d'urgence » — parcours du traumatisé sévère sur timeline commune (régulation / pré-hospitalier / intra-hospitalier)",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:single": "tsc --noEmit && node scripts/build-single.mjs",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/TooTallNate/util-deprecate.git"
+  "dependencies": {
+    "framer-motion": "^11.11.17",
+    "jspdf": "^2.5.2",
+    "lucide-react": "^0.460.0",
+    "lz-string": "^1.5.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.5"
   },
-  "keywords": [
-    "util",
-    "deprecate",
-    "browserify",
-    "browser",
-    "node"
-  ],
-  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TooTallNate/util-deprecate/issues"
-  },
-  "homepage": "https://github.com/TooTallNate/util-deprecate"
+  "devDependencies": {
+    "@types/node": "^22.19.20",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-plugin-singlefile": "^2.0.3",
+    "vitest": "^2.1.5"
+  }
 }

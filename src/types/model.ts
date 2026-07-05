@@ -156,6 +156,10 @@ export interface ValueEntry {
 }
 
 export interface CaseHeader {
+  /** Identité patient ANONYME (compositeur / numéro / pseudo) — jamais de vraie identité. */
+  patientCodename?: string
+  /** Identifiant technique de session (unicité de la « salle » de synchro). */
+  sessionId?: string
   smurName?: string
   regulateurName?: string
   serviceReceveur?: string

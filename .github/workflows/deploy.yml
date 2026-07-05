@@ -1,4 +1,7 @@
-name: Deploiement GitHub Pages
+name: Déploiement GitHub Pages
+
+# Construit l'application et la publie sur GitHub Pages à chaque envoi sur la
+# branche principale. Rien à installer en local : GitHub s'en charge.
 
 on:
   push:
@@ -18,14 +21,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Récupération du code
+        uses: actions/checkout@v4
+      - name: Installation de Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - name: Installation des dépendances
+        run: npm ci
+      - name: Construction (Vite)
+        run: npm run build
+      - name: Préparation de l'artefact Pages
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
@@ -36,5 +44,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
+      - name: Déploiement sur GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4

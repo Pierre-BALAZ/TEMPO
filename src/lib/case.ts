@@ -1,4 +1,5 @@
 import type { ActionValue, CaseState } from '../types/model'
+import { randomComposer, randomId } from './codename'
 
 /** true si la valeur correspond à une action « faite / remplie ». */
 export function isFilledValue(value: ActionValue): boolean {
@@ -11,7 +12,7 @@ export function isFilledValue(value: ActionValue): boolean {
 export function createEmptyCase(protocolId: string, now: number): CaseState {
   return {
     protocolId,
-    header: { caseStartedAt: now },
+    header: { caseStartedAt: now, patientCodename: randomComposer(), sessionId: randomId() },
     values: {},
   }
 }
