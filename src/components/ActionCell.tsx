@@ -11,12 +11,14 @@ import { LEVEL_STYLES } from '../lib/theme'
 
 interface Props {
   action: ActionDef
-  x: number
-  top: number
+  x?: number
+  top?: number
   effect?: VisualEffect
+  /** true = rendu en flux (carte pleine largeur, vue Pupitre) ; false = positionné sur la frise. */
+  flow?: boolean
 }
 
-export function ActionCell({ action, x, top, effect }: Props) {
+export function ActionCell({ action, x, top, effect, flow = false }: Props) {
   const setValue = useCaseStore((s) => s.setValue)
   const entry = useCaseStore((s) => s.caseState.values[action.id])
   const openAction = useUiStore((s) => s.openAction)
@@ -35,8 +37,9 @@ export function ActionCell({ action, x, top, effect }: Props) {
   const CategoryIcon = iconForCategory(action.category)
 
   const classes = [
-    'absolute rounded-lg border px-2.5 py-1.5 text-left shadow-sm transition-all',
+    'rounded-lg border px-2.5 py-1.5 text-left shadow-sm transition-all',
     'flex flex-col justify-between overflow-hidden',
+    flow ? 'relative w-full' : 'absolute',
   ]
   if (locked) {
     classes.push('border-dashed border-slate-300 bg-slate-100 opacity-60')
@@ -59,7 +62,7 @@ export function ActionCell({ action, x, top, effect }: Props) {
     <div
       data-action-id={action.id}
       className={classes.join(' ')}
-      style={{ left: x, top, width: PILL_W, minHeight: PILL_H }}
+      style={flow ? { minHeight: PILL_H } : { left: x, top, width: PILL_W, minHeight: PILL_H }}
       title={action.label}
     >
       {activeClick && (

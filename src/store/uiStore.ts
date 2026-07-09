@@ -29,6 +29,16 @@ interface UiStore {
   /** Colonne latérale gauche réduite à un rail d'icônes (gain de place, surtout mobile). */
   compactRail: boolean
   toggleCompactRail: () => void
+
+  /** Disposition du plateau : 'portee' (frise horizontale) ou 'pupitre' (colonnes de cartes). */
+  layout: 'portee' | 'pupitre'
+  setLayout: (l: 'portee' | 'pupitre') => void
+}
+
+/** Défaut intelligent : Pupitre (vertical) sur petit écran, Portée (frise) sinon. */
+function defaultLayout(): 'portee' | 'pupitre' {
+  if (typeof window !== 'undefined' && window.innerWidth < 768) return 'pupitre'
+  return 'portee'
 }
 
 export const useUiStore = create<UiStore>((set) => ({
@@ -52,6 +62,9 @@ export const useUiStore = create<UiStore>((set) => ({
 
   compactRail: false,
   toggleCompactRail: () => set((s) => ({ compactRail: !s.compactRail })),
+
+  layout: defaultLayout(),
+  setLayout: (layout) => set({ layout }),
 }))
 
 /** L'utilisateur peut-il éditer la piste donnée ? (rôle choisi ET piste = rôle actif). */

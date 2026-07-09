@@ -6,6 +6,10 @@ import { RoleSwitcher } from './components/RoleSwitcher'
 import { ShareBar } from './components/ShareBar'
 import { SyncControl } from './components/SyncControl'
 import { ScoreBoard } from './components/ScoreBoard'
+import { PupitreBoard } from './components/PupitreBoard'
+import { LayoutToggle } from './components/LayoutToggle'
+import { RecapButton } from './components/RecapButton'
+import { Sources } from './components/Sources'
 import { GuidedPlayer } from './components/GuidedPlayer'
 import { ActionDetailPanel } from './components/ActionDetailPanel'
 import { VoiceControl } from './components/VoiceControl'
@@ -21,6 +25,7 @@ export default function App() {
   const syncSupported = useBroadcastSync()
   const collapsedCount = useUiStore((s) => s.collapsedTracks.length)
   const setAllCollapsed = useUiStore((s) => s.setAllCollapsed)
+  const layout = useUiStore((s) => s.layout)
   const allCollapsed = collapsedCount >= 3
 
   // L'état initial est restauré dès la création du store (lien > localStorage > vierge).
@@ -85,7 +90,14 @@ export default function App() {
 
       <GuidedPlayer />
 
-      <ScoreBoard />
+      <div className="flex items-center justify-between gap-2">
+        <RecapButton />
+        <LayoutToggle />
+      </div>
+
+      {layout === 'pupitre' ? <PupitreBoard /> : <ScoreBoard />}
+
+      <Sources />
 
       <Legend />
 
