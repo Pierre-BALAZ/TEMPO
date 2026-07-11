@@ -24,12 +24,33 @@ export interface SelectOption {
 export interface SubField {
   id: string
   label: string
-  type: 'text' | 'number' | 'select' | 'checkbox'
+  type: 'text' | 'number' | 'select' | 'checkbox' | 'timestamp'
   options?: SelectOption[]
   unit?: string
   placeholder?: string
   /** Titre de regroupement (ex. catégorie Vittel) affiché au-dessus du sous-champ. */
   group?: string
+  /** Jauge colorée (pour un sous-champ numérique) : vert = normal, rouge = extrêmes. */
+  gauge?: GaugeSpec
+  /**
+   * Lie ce sous-champ à une action existante (partage de valeur) plutôt qu'à la clé
+   * `parent::id`. Ex. la SpO₂ ou la température des ACSOS = celles du bilan XABCDE.
+   */
+  bindTo?: string
+}
+
+export interface GaugeSpec {
+  min: number
+  max: number
+  /** Pas du curseur (défaut 1 ; ex. 0,1 pour la température). */
+  step?: number
+  /** Rouge en dessous de ce seuil (borne inférieure de normalité). */
+  redBelow?: number
+  /** Rouge au-dessus de ce seuil (borne supérieure de normalité). */
+  redAbove?: number
+  /** Zone verte [normalMin, normalMax] ; rouge de part et d'autre. */
+  normalMin?: number
+  normalMax?: number
 }
 
 export interface ClinicalReference {
@@ -42,14 +63,16 @@ export interface ActionDetail {
   reminder?: string
   references?: ClinicalReference[]
   subFields?: SubField[]
+  /** Inclure les sous-champs renseignés dans la synthèse chronologique. */
+  recapSubFields?: boolean
   /** Widget interactif spécifique rendu dans le panneau de détail (ex. schéma corporel Wallace). */
-  widget?: 'burnBodyMap'
+  widget?: 'burnBodyMap' | 'evolutionLog'
 }
 
 /** Score calculé à partir d'autres actions (ex. score ABC = somme de 4 items). */
 export interface ComputedSpec {
   inputs: string[] // ids d'actions checkbox/number
-  method: 'sum' | 'count'
+  method: 'sum' | 'count' | 'ratio'
   /**
    * Poids par input (méthode 'sum' uniquement) : la contribution d'un input vaut
    * `valeur × poids`. Absent ⇒ poids 1 (comportement historique, ex. score ABC).

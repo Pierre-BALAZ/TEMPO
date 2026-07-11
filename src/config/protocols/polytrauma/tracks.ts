@@ -30,6 +30,7 @@ export const tracks: TrackDef[] = [
       { id: 'prehosp.brulures', trackId: 'prehosp', label: 'Brûlures (Wallace)' },
       { id: 'prehosp.scores', trackId: 'prehosp', label: 'Scores & gravité' },
       { id: 'prehosp.transmission', trackId: 'prehosp', label: 'Transmission' },
+      { id: 'prehosp.transport', trackId: 'prehosp', label: 'Transport' },
     ],
   },
   {

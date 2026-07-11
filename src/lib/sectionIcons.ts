@@ -11,6 +11,7 @@ import {
   Users,
   Bone,
   Droplet,
+  Ambulance,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -33,6 +34,7 @@ export const SECTION_ICONS: Record<string, SectionIcon> = {
   'prehosp.brulures': { Icon: Flame }, // brûlures
   'prehosp.scores': { Icon: Superscript }, // scores & gravité (x²)
   'prehosp.transmission': { Icon: Phone }, // transmission
+  'prehosp.transport': { Icon: Ambulance }, // transport
   // Intra-hospitalier
   'intra.activation': { Icon: Users }, // activation équipe
   'intra.imagerie': { Icon: Bone }, // imagerie / bilan (squelette)

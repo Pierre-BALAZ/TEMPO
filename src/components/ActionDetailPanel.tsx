@@ -1,9 +1,12 @@
-import { Check, X } from 'lucide-react'
+import { Check, Clock, X } from 'lucide-react'
 import type { ActionValue, SubField } from '../types/model'
 import { protocolIndex } from '../config'
 import { useCaseStore } from '../store/caseStore'
 import { canEditTrack, useUiStore } from '../store/uiStore'
+import { formatClock } from '../lib/timeline'
 import { BurnBodyMap } from './BurnBodyMap'
+import { EvolutionLog } from './EvolutionLog'
+import { Gauge } from './Gauge'
 
 export function ActionDetailPanel() {
   const openActionId = useUiStore((s) => s.openActionId)
@@ -60,6 +63,10 @@ export function ActionDetailPanel() {
           <BurnBodyMap actionId={action.id} editable={editable} />
         )}
 
+        {action.detail?.widget === 'evolutionLog' && (
+          <EvolutionLog actionId={action.id} editable={editable} />
+        )}
+
         {groups.length > 0 && (
           <div className="flex flex-col gap-4">
             {groups.map((g, gi) => (
@@ -70,7 +77,7 @@ export function ActionDetailPanel() {
                   </h3>
                 )}
                 {g.items.map((sf) => {
-                  const key = `${action.id}::${sf.id}`
+                  const key = sf.bindTo ?? `${action.id}::${sf.id}`
                   return (
                     <SubFieldInput
                       key={sf.id}
@@ -132,6 +139,50 @@ function SubFieldInput({
         </span>
         <span className="text-slate-700">{subField.label}</span>
       </button>
+    )
+  }
+
+  if (subField.type === 'timestamp') {
+    const recorded = typeof value === 'string' && value !== '' ? value : null
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onChange(recorded ? null : formatClock(Date.now()))}
+          className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-sm font-medium ${
+            recorded
+              ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
+              : 'border-slate-300 text-slate-700 hover:bg-slate-50'
+          }`}
+        >
+          <Clock size={14} />
+          {recorded ? `${subField.label} : ${recorded}` : `${subField.label} — noter l’heure`}
+        </button>
+        {recorded && (
+          <button
+            type="button"
+            onClick={() => onChange(null)}
+            aria-label="Effacer"
+            className="rounded p-1 text-slate-400 hover:bg-slate-100"
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  if (subField.type === 'number' && subField.gauge) {
+    return (
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-slate-700">{subField.label}</span>
+        <Gauge
+          spec={subField.gauge}
+          value={typeof value === 'number' ? value : null}
+          unit={subField.unit}
+          onChange={onChange}
+        />
+      </div>
     )
   }
 

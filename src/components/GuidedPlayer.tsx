@@ -81,9 +81,10 @@ export function GuidedPlayer() {
         },
         speechRate(speed),
       )
-      // Filet de sécurité : si la fin de parole ne se déclenche pas, on avance quand même.
-      const estMs = Math.min(3500 + text.length * 75, 26000)
-      safetyTimer = setTimeout(advance, estMs / speed + 2000)
+      // Filet de sécurité (anti-blocage) : volontairement large, pour ne jamais
+      // couper une narration réelle — il ne sert qu'en cas d'absence de fin de parole.
+      const estMs = 4000 + text.length * 95
+      safetyTimer = setTimeout(advance, estMs / speed + 6000)
     } else {
       doneTimer = setTimeout(advance, (step.holdMs ?? GUIDED_BASE_MS) / speed)
     }

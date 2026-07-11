@@ -28,6 +28,11 @@ export function computeValue(
   if (spec.method === 'count') {
     return nums.filter((n) => n > 0).length
   }
+  if (spec.method === 'ratio') {
+    const den = nums[1]
+    if (!den) return 0
+    return Math.round((nums[0] / den) * 100) / 100
+  }
   // 'sum' : contribution = valeur × poids (poids par défaut = 1).
   return spec.inputs.reduce((acc, id, i) => acc + nums[i] * (spec.weights?.[id] ?? 1), 0)
 }

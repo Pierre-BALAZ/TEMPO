@@ -14,4 +14,8 @@ export const SOURCES: SourceRef[] = [
     label: 'Surface brûlée — règle de Wallace',
     note: 'Règle des 9 (adulte) ; orientation CTB selon surface, profondeur, localisation, inhalation.',
   },
+  {
+    label: 'ACSOS — traumatisme crânien préhospitalier',
+    note: 'Prise en charge des traumatismes crâniens en médecine préhospitalière (Revue Médicale Suisse, 2001). revmed.ch',
+  },
 ]

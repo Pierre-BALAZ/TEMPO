@@ -64,6 +64,12 @@ export const rules: RuleDef[] = [
         level: 'critical',
         note: 'BATT ≥ 8 → administrer OctaplasLG (plasma SD).',
       },
+      {
+        kind: 'highlight',
+        targetId: 'prehosp.g.octaplas',
+        level: 'critical',
+        note: 'BATT ≥ 8 → OctaplasLG dès le préhospitalier.',
+      },
     ],
   },
 
@@ -213,6 +219,37 @@ export const rules: RuleDef[] = [
         level: 'critical',
         note: 'SCB > 20 % → remplissage 20 ml/kg de cristalloïdes sur la 1ʳᵉ heure.',
       },
+    ],
+  },
+
+  /* (12) Shock Index ≥ 1,1 (SMUR) → choc hémorragique probable → Niveau I + alertes régul/intra */
+  {
+    id: 'r.shockindex-choc',
+    description:
+      'Shock Index ≥ 1,1 → choc hémorragique probable → orienter Niveau I, alerter transfusion massive / bloc.',
+    when: { kind: 'gte', actionId: 'prehosp.scores.shockindex', value: 1.1 },
+    then: [
+      {
+        kind: 'blink',
+        targetId: 'prehosp.scores.shockindex',
+        level: 'critical',
+        note: 'Shock Index ≥ 1,1 → choc hémorragique probable.',
+      },
+      { kind: 'blink', targetId: 'section:regul.orientation', level: 'critical' },
+      {
+        kind: 'highlight',
+        targetId: 'regul.tc.niveau1',
+        level: 'critical',
+        note: 'Shock Index ≥ 1,1 → orienter vers un centre de Niveau I.',
+      },
+      { kind: 'blink', targetId: 'section:intra.transfusion', level: 'critical' },
+      {
+        kind: 'highlight',
+        targetId: 'intra.transfusion.ptm',
+        level: 'critical',
+        note: 'Shock Index ≥ 1,1 → protocole de transfusion massive.',
+      },
+      { kind: 'blink', targetId: 'section:intra.bloc', level: 'critical' },
     ],
   },
 ]

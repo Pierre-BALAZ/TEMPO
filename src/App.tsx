@@ -10,6 +10,7 @@ import { PupitreBoard } from './components/PupitreBoard'
 import { LayoutToggle } from './components/LayoutToggle'
 import { RecapButton } from './components/RecapButton'
 import { Sources } from './components/Sources'
+import { MilestoneChime } from './components/MilestoneChime'
 import { GuidedPlayer } from './components/GuidedPlayer'
 import { ActionDetailPanel } from './components/ActionDetailPanel'
 import { VoiceControl } from './components/VoiceControl'
@@ -89,6 +90,8 @@ export default function App() {
       <SyncControl />
 
       <GuidedPlayer />
+
+      <MilestoneChime />
 
       <div className="flex items-center justify-between gap-2">
         <RecapButton />

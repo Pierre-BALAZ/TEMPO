@@ -40,6 +40,9 @@ export const VOICE_NUMERIC: VoiceNumeric[] = [
   { actionId: 'prehosp.c.fc', label: 'Fréquence cardiaque', keywords: ['frequence cardiaque', 'frequence', 'pouls', 'coeur', 'fc'], max: 300, unit: '/min', avoidAfter: 'respir' },
   { actionId: 'prehosp.b.spo2', label: 'SpO₂', keywords: ['saturation', 'spo2', 'sp o2'], min: 0, max: 100, unit: '%' },
   { actionId: 'prehosp.d.gcs', label: 'Glasgow', keywords: ['glasgow', 'gcs'], min: 3, max: 15 },
+  { actionId: 'prehosp.acsos::capnie', label: 'Capnie (EtCO₂)', keywords: ['capnie', 'capnimetrie', 'etco2', 'et co2', 'co2 expire'], min: 0, max: 100, unit: 'mmHg' },
+  { actionId: 'prehosp.acsos::pam-hemo', label: 'PAM', keywords: ['pam', 'pression arterielle moyenne', 'pression moyenne'], max: 200, unit: 'mmHg' },
+  { actionId: 'prehosp.e.temperature', label: 'Température', keywords: ['temperature'], min: 30, max: 45, unit: '°C' },
 ]
 
 export const VOICE_TOGGLE: VoiceToggle[] = [
@@ -55,6 +58,9 @@ export const VOICE_TOGGLE: VoiceToggle[] = [
   { actionId: 'prehosp.e.hypothermie', label: 'Prévention hypothermie', keywords: ['hypothermie', 'rechauffement', 'couverture de survie'] },
   { actionId: 'prehosp.transmission.bilan', label: 'Bilan transmis', keywords: ['bilan transmis', 'bilan a la regulation', 'transmission du bilan'] },
   { actionId: 'prehosp.scores.abc::fast', label: 'FAST', keywords: ['fast', 'e fast', 'efast'] },
+  { actionId: 'prehosp.d.anisocorie', label: 'Anisocorie', keywords: ['anisocorie'] },
+  { actionId: 'prehosp.acsos::hyperglycemie', label: 'Hyperglycémie', keywords: ['hyperglycemie'] },
+  { actionId: 'prehosp.acsos::hyponatremie', label: 'Hyponatrémie', keywords: ['hyponatremie'] },
 ]
 
 export const VOICE_SELECT: VoiceSelect[] = [

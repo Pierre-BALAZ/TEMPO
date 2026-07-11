@@ -1,4 +1,5 @@
-import type { ActionDef, ActionValue, CaseState, Protocol } from '../types/model'
+import type { ActionDef, ActionValue, CaseState, Protocol, SubField } from '../types/model'
+import { parseLog } from './evolutionLog'
 import { formatClock } from './timeline'
 
 export interface RecapItem {
@@ -20,6 +21,17 @@ function valueText(def: ActionDef, value: ActionValue): string {
   return String(value)
 }
 
+function subValueText(sf: SubField, value: ActionValue): string {
+  if (sf.type === 'checkbox') return value === true ? 'fait' : ''
+  if (value === null || value === undefined || value === '') return ''
+  if (sf.type === 'select') {
+    const opt = sf.options?.find((o) => o.value === value)
+    return opt ? opt.label : String(value)
+  }
+  if (sf.type === 'number') return sf.unit ? `${value} ${sf.unit}` : String(value)
+  return String(value)
+}
+
 /** Liste chronologique des actions horodatées (les plus anciennes d'abord). */
 export function buildRecap(
   caseState: CaseState,
@@ -33,12 +45,52 @@ export function buildRecap(
     for (const s of t.sections) sectionLabel[s.id] = s.label
   }
 
+  // Sous-champs à inclure dans le récap (actions marquées recapSubFields, ex. ACSOS / ACR).
+  const subFieldMap = new Map<string, { sf: SubField; parent: ActionDef }>()
+  for (const def of index.values()) {
+    if (!def.detail?.recapSubFields) continue
+    for (const sf of def.detail.subFields ?? []) {
+      if (sf.bindTo) continue // valeur portée par l'action liée (déjà au récap)
+      subFieldMap.set(`${def.id}::${sf.id}`, { sf, parent: def })
+    }
+  }
+
   const items: RecapItem[] = []
   for (const [id, entry] of Object.entries(caseState.values)) {
     if (!entry || entry.completedAt == null) continue
-    if (id.includes('::')) continue // sous-champs (Vittel/ABC/BATT) non détaillés ici
+
+    if (id.includes('::')) {
+      const sub = subFieldMap.get(id)
+      if (!sub) continue // autres sous-champs (Vittel/ABC/BATT) non détaillés
+      const vt = subValueText(sub.sf, entry.value)
+      if (vt === '') continue
+      items.push({
+        at: entry.completedAt,
+        trackLabel: trackLabel[sub.parent.trackId] ?? sub.parent.trackId,
+        sectionLabel: sectionLabel[sub.parent.sectionId] ?? '',
+        label: `${sub.parent.label} — ${sub.sf.label}`,
+        valueText: vt,
+      })
+      continue
+    }
+
     const def = index.get(id)
     if (!def) continue
+
+    if (def.detail?.widget === 'evolutionLog') {
+      for (const note of parseLog(entry.value)) {
+        if (!note.text.trim()) continue
+        items.push({
+          at: note.at,
+          trackLabel: trackLabel[def.trackId] ?? def.trackId,
+          sectionLabel: sectionLabel[def.sectionId] ?? '',
+          label: def.label,
+          valueText: note.text,
+        })
+      }
+      continue
+    }
+
     const vt = valueText(def, entry.value)
     if (vt === '') continue
     items.push({

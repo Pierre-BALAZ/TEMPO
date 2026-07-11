@@ -1,10 +1,11 @@
-import { Check, Info, Lock, MousePointerClick } from 'lucide-react'
+import { Check, Info, Lock, MousePointerClick, NotebookPen } from 'lucide-react'
 import type { ActionDef, ActionValue, VisualEffect } from '../types/model'
 import { useCaseStore } from '../store/caseStore'
 import { canEditTrack, useUiStore } from '../store/uiStore'
 import { usePlayerStore } from '../store/playerStore'
 import { useResolvedValue } from '../store/selectors'
 import { isFilledValue } from '../lib/case'
+import { parseLog } from '../lib/evolutionLog'
 import { iconForCategory } from '../lib/icons'
 import { PILL_H, PILL_W, formatClock } from '../lib/timeline'
 import { LEVEL_STYLES } from '../lib/theme'
@@ -28,6 +29,8 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
 
   const locked = Boolean(action.lockedByDefault) && !effect?.unlocked
   const inputsDisabled = locked || !editable
+  const isLog = action.detail?.widget === 'evolutionLog'
+  const logCount = isLog ? parseLog(value).length : 0
   const checkboxDone = action.type === 'checkbox' && value === true
   const filled = action.type !== 'checkbox' && action.type !== 'computed' && isFilledValue(value)
   const computedActive = action.type === 'computed' && typeof value === 'number' && value > 0
@@ -109,11 +112,24 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
       </div>
 
       <div className="mt-1 flex items-center gap-1.5">
-        {renderEditor(action, value, locked, !editable, setValue)}
-        {entry?.completedAt != null && (checkboxDone || filled) && (
-          <span className="ml-auto text-[10px] tabular-nums text-slate-400">
-            {formatClock(entry.completedAt)}
-          </span>
+        {isLog ? (
+          <button
+            type="button"
+            onClick={() => openAction(action.id)}
+            className="flex items-center gap-1 rounded border border-slate-300 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:bg-slate-50"
+          >
+            <NotebookPen size={12} />
+            {logCount > 0 ? `${logCount} note${logCount > 1 ? 's' : ''}` : 'Ajouter une note'}
+          </button>
+        ) : (
+          <>
+            {renderEditor(action, value, locked, !editable, setValue)}
+            {entry?.completedAt != null && (checkboxDone || filled) && (
+              <span className="ml-auto text-[10px] tabular-nums text-slate-400">
+                {formatClock(entry.completedAt)}
+              </span>
+            )}
+          </>
         )}
       </div>
 

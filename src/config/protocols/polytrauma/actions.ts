@@ -1,4 +1,4 @@
-import type { ActionDef } from '../../../types/model'
+import type { ActionDef, SubField } from '../../../types/model'
 import {
   ABC_REMINDER,
   BATT_REMINDER,
@@ -20,6 +20,16 @@ import {
   WALLACE_SUBFIELDS,
   WALLACE_WEIGHTS,
 } from './burns'
+
+/** Sous-menu commun aux boutons ACR (régulation et pré-hospitalier). */
+const ACR_SUBFIELDS: SubField[] = [
+  { id: 'noflow', type: 'number', label: 'No-flow', unit: 'min' },
+  { id: 'lowflow', type: 'number', label: 'Low-flow', unit: 'min' },
+  { id: 'adrenaline', type: 'number', label: 'Adrénaline', unit: 'mg' },
+  { id: 'cee', type: 'number', label: 'CEE (nombre de chocs)' },
+  { id: 'cordarone', type: 'number', label: 'Cordarone / amiodarone', unit: 'mg' },
+  { id: 'racs', type: 'timestamp', label: 'RACS (reprise d’activité cardiaque spontanée)' },
+]
 
 /**
  * Toutes les actions de la filière polytraumatisé, réparties sur les 3 pistes.
@@ -236,12 +246,32 @@ export const actions: ActionDef[] = [
     defaultTimeOffsetMin: 5,
   },
   {
+    id: 'prehosp.d.anisocorie',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.abcde',
+    label: 'D — Anisocorie',
+    type: 'checkbox',
+    category: 'neuro',
+    defaultTimeOffsetMin: 5,
+  },
+  {
     id: 'prehosp.e.hypothermie',
     trackId: 'prehosp',
     sectionId: 'prehosp.abcde',
     label: 'E — Prévention hypothermie',
     type: 'checkbox',
     category: 'exposure',
+    defaultTimeOffsetMin: 6,
+  },
+  {
+    id: 'prehosp.e.temperature',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.abcde',
+    label: 'E — Température',
+    type: 'number',
+    category: 'exposure',
+    unit: '°C',
+    placeholder: 'ex. 36,5',
     defaultTimeOffsetMin: 6,
   },
   {
@@ -290,6 +320,166 @@ export const actions: ActionDef[] = [
     defaultTimeOffsetMin: 6,
   },
   {
+    id: 'prehosp.acsos',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.gestes',
+    label: 'ACSOS',
+    type: 'checkbox',
+    category: 'neuro',
+    defaultTimeOffsetMin: 6,
+    detail: {
+      recapSubFields: true,
+      reminder:
+        'ACSOS — agressions cérébrales secondaires d’origine systémique. Les prévenir / corriger : hypotension, hypoxémie, hypo/hypercapnie, anémie, hyperthermie, hyperglycémie, hyponatrémie. Objectifs préhospitaliers : PAS ≥ 90 mmHg (PAM ≥ 55 si hémorragie), SpO₂ ≥ 90 %, normocapnie.',
+      subFields: [
+        {
+          id: 'pam-tc',
+          type: 'number',
+          label: 'PA moyenne — objectif TC (≥ 90 mmHg)',
+          unit: 'mmHg',
+          group: 'Tension artérielle',
+          gauge: { min: 30, max: 150, redBelow: 90 },
+        },
+        {
+          id: 'pam-hemo',
+          type: 'number',
+          label: 'PA moyenne — objectif hémorragie (≥ 55 mmHg)',
+          unit: 'mmHg',
+          group: 'Tension artérielle',
+          gauge: { min: 30, max: 150, redBelow: 55 },
+        },
+        {
+          id: 'capnie',
+          type: 'number',
+          label: 'Capnie (EtCO₂)',
+          unit: 'mmHg',
+          group: 'Ventilation / oxygénation',
+          gauge: { min: 15, max: 60, normalMin: 35, normalMax: 40 },
+        },
+        {
+          id: 'spo2',
+          type: 'number',
+          label: 'SpO₂ (hypoxémie si < 90 %)',
+          unit: '%',
+          group: 'Ventilation / oxygénation',
+          bindTo: 'prehosp.b.spo2',
+          gauge: { min: 70, max: 100, redBelow: 90 },
+        },
+        {
+          id: 'hcue',
+          type: 'text',
+          label: 'Anémie aiguë — Hcue =',
+          placeholder: 'ex. 9 g/dL',
+          group: 'Autres ACSOS',
+        },
+        {
+          id: 'temperature',
+          type: 'number',
+          label: 'Température',
+          unit: '°C',
+          group: 'Autres ACSOS',
+          bindTo: 'prehosp.e.temperature',
+          gauge: { min: 33, max: 42, step: 0.1, normalMin: 36, normalMax: 37.9 },
+        },
+        { id: 'hyperglycemie', type: 'checkbox', label: 'Hyperglycémie', group: 'Autres ACSOS' },
+        { id: 'hyponatremie', type: 'checkbox', label: 'Hyponatrémie', group: 'Autres ACSOS' },
+      ],
+    },
+  },
+  {
+    id: 'prehosp.acr',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.gestes',
+    label: 'ACR',
+    type: 'checkbox',
+    category: 'circulation',
+    defaultTimeOffsetMin: 0,
+    detail: {
+      recapSubFields: true,
+      reminder:
+        'Arrêt cardio-respiratoire — RCP selon recommandations. Consigner no-flow / low-flow, adrénaline, chocs externes (CEE), amiodarone (Cordarone).',
+      subFields: ACR_SUBFIELDS,
+    },
+  },
+  {
+    id: 'regul.acr',
+    trackId: 'regul',
+    sectionId: 'regul.appel',
+    label: 'ACR',
+    type: 'checkbox',
+    category: 'circulation',
+    defaultTimeOffsetMin: 0,
+    detail: {
+      recapSubFields: true,
+      reminder:
+        'Arrêt cardio-respiratoire signalé à l’appel — guidage RCP. Consigner no-flow / low-flow, adrénaline, chocs externes (CEE), amiodarone (Cordarone).',
+      subFields: ACR_SUBFIELDS,
+    },
+  },
+  {
+    id: 'prehosp.transport.evolution',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.transport',
+    label: 'Évolution',
+    type: 'text',
+    category: 'transmission',
+    defaultTimeOffsetMin: 14,
+    detail: {
+      recapSubFields: false,
+      widget: 'evolutionLog',
+      reminder:
+        'Journal d’évolution pendant le transport : chaque note est horodatée à l’instant où vous l’ajoutez, et reprise dans la synthèse chronologique.',
+    },
+  },
+  {
+    id: 'prehosp.g.expansion',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.gestes',
+    label: 'Expansion volémique',
+    type: 'checkbox',
+    category: 'circulation',
+    defaultTimeOffsetMin: 6,
+  },
+  {
+    id: 'prehosp.g.antibioprophylaxie',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.gestes',
+    label: 'Antibioprophylaxie',
+    type: 'checkbox',
+    category: 'medication',
+    defaultTimeOffsetMin: 8,
+  },
+  {
+    id: 'prehosp.g.octaplas',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.gestes',
+    label: 'OctaplasLG (plasma SD)',
+    type: 'checkbox',
+    category: 'transfusion',
+    defaultTimeOffsetMin: 7,
+    detail: {
+      reminder:
+        'OctaplasLG — plasma humain viro-atténué par solvant-détergent (SD), prêt à l’emploi, groupe-compatible. Réanimation hémostatique du choc hémorragique (ratio ≈ 1:1:1). Mis en avant dès le préhospitalier sur BATT ≥ 8. Posologie et place selon le protocole local.',
+    },
+  },
+  {
+    id: 'prehosp.g.osmotherapie',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.gestes',
+    label: 'Osmothérapie',
+    type: 'checkbox',
+    category: 'medication',
+    defaultTimeOffsetMin: 7,
+    detail: {
+      reminder:
+        'Osmothérapie (HTIC / signes d’engagement) — au choix selon le protocole local.',
+      subFields: [
+        { id: 'mannitol', type: 'checkbox', label: 'Mannitol 20 % — 0,5–1 g/kg en 15–20 min' },
+        { id: 'ssh', type: 'checkbox', label: 'SSH (NaCl 20 %) — 12 g IVSE sur 20 min' },
+      ],
+    },
+  },
+  {
     id: 'prehosp.g.txa',
     trackId: 'prehosp',
     sectionId: 'prehosp.gestes',
@@ -335,6 +525,20 @@ export const actions: ActionDef[] = [
   },
 
   /* --- Score ABC : items en sous-menu (seul l'encart du score s'affiche sur la piste) --- */
+  {
+    id: 'prehosp.scores.shockindex',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.scores',
+    label: 'Shock Index (FC / PAS)',
+    type: 'computed',
+    category: 'score',
+    computed: { method: 'ratio', inputs: ['prehosp.c.fc', 'prehosp.c.pas'] },
+    defaultTimeOffsetMin: 6,
+    detail: {
+      reminder:
+        'Shock Index = FC / PAS. Normal ≈ 0,5–0,7 ; ≥ 0,9–1,0 évoque un choc hémorragique / une hypovolémie significative.',
+    },
+  },
   {
     id: 'prehosp.scores.abc',
     trackId: 'prehosp',

@@ -52,7 +52,7 @@ export const guidedSteps: GuidedStep[] = [
   {
     narration:
       'Le principe de TEMPO : représenter la prise en charge du traumatisé sévère comme une partition musicale, sur trois pistes qui partagent une même ligne de temps.',
-    say: "Bienvenue dans TEMPO. Le principe est simple : représenter la prise en charge d'un traumatisé sévère comme une partition musicale. Trois pistes — la régulation au SAMU Centre 15, le pré-hospitalier avec le SMUR, et l'intra-hospitalier au déchocage — se déroulent sur une même ligne de temps partagée. Chaque geste coché sur une piste peut éclairer, ou débloquer, une action sur les autres.",
+    say: "Bienvenue dans TEMPO. Le principe est simple : représenter la prise en charge d'un traumatisé sévère comme une partition musicale. Trois pistes — la régulation au SAMU Centre 15, le pré-hospitalier avec le Smur, et l'intra-hospitalier au déchocage — se déroulent sur une même ligne de temps partagée. Chaque geste coché sur une piste peut éclairer, ou débloquer, une action sur les autres.",
     holdMs: 8000,
   },
   {
@@ -64,7 +64,7 @@ export const guidedSteps: GuidedStep[] = [
   {
     narration:
       "L'objectif : une meilleure coordination entre tous les acteurs, et une prise en compte du temps réellement écoulé depuis le début de la prise en charge.",
-    say: "L'enjeu de TEMPO est double. D'abord, améliorer la coordination entre tous les acteurs de la prise en charge du traumatisé sévère : le régulateur, l'équipe SMUR et l'équipe hospitalière voient la même partition, et savent à chaque instant ce que font les autres. Ensuite, mieux prendre en compte le temps réellement écoulé : chaque action est horodatée sur la ligne de temps, ce qui rend les délais visibles et aide à respecter les fenêtres critiques, comme celle de l'acide tranexamique.",
+    say: "L'enjeu de TEMPO est double. D'abord, améliorer la coordination entre tous les acteurs de la prise en charge du traumatisé sévère : le régulateur, l'équipe Smur et l'équipe hospitalière voient la même partition, et savent à chaque instant ce que font les autres. Ensuite, mieux prendre en compte le temps réellement écoulé : chaque action est horodatée sur la ligne de temps, ce qui rend les délais visibles et aide à respecter les fenêtres critiques, comme celle de l'acide tranexamique.",
     holdMs: 9000,
   },
 
@@ -74,8 +74,8 @@ export const guidedSteps: GuidedStep[] = [
     value: true,
     offsetMin: 0,
     narration:
-      'Régulation — critère de Vittel (cinétique : éjection du véhicule) : traumatisé sévère suspecté. Le SMUR va être invité à attribuer un grade.',
-    say: "La régulation reçoit l'appel. Un critère de Vittel est présent : éjection du véhicule. On suspecte d'emblée un traumatisé sévère. Le SMUR sera invité à attribuer un grade de gravité.",
+      'Régulation — critère de Vittel (cinétique : éjection du véhicule) : traumatisé sévère suspecté.',
+    say: "La régulation reçoit l'appel. Un critère de Vittel est présent : éjection du véhicule. On suspecte d'emblée un traumatisé sévère.",
   },
   {
     actionId: 'regul.appel.vittel::cin-projete',
@@ -96,14 +96,14 @@ export const guidedSteps: GuidedStep[] = [
     value: true,
     offsetMin: 3,
     narration: 'Régulation — engagement du SMUR (équipe médicalisée).',
-    say: "Elle engage également le SMUR, l'équipe médicalisée.",
+    say: "Elle engage également le Smur, l'équipe médicalisée.",
   },
   {
     actionId: 'prehosp.a.lvas',
     value: true,
     offsetMin: 5,
     narration: 'SMUR sur les lieux — A : libération des voies aériennes + immobilisation cervicale.',
-    say: "Le SMUR est sur les lieux. Étape A : libération des voies aériennes, et immobilisation du rachis cervical.",
+    say: "Le Smur est sur les lieux. Étape A : libération des voies aériennes, et immobilisation du rachis cervical.",
   },
   {
     actionId: 'prehosp.c.pas',
@@ -124,7 +124,7 @@ export const guidedSteps: GuidedStep[] = [
     value: true,
     offsetMin: 7,
     narration: 'SMUR — contrôle d’une hémorragie externe (garrot).',
-    say: "Le SMUR contrôle une hémorragie externe par la pose d'un garrot.",
+    say: "Le Smur contrôle une hémorragie externe par la pose d'un garrot.",
   },
   {
     actionId: 'prehosp.scores.abc::fast',
@@ -164,11 +164,19 @@ export const guidedSteps: GuidedStep[] = [
     say: "Item ABC : fréquence cardiaque supérieure ou égale à 120. Le score ABC atteint 4 : l'onglet Transfusion massive se met à clignoter à l'hôpital.",
   },
   {
+    actionId: 'prehosp.g.octaplas',
+    value: true,
+    offsetMin: 9,
+    narration:
+      'SMUR — OctaplasLG (plasma SD) : plasma prêt à l’emploi, en cas de haut risque hémorragique (mis en rouge si BATT ≥ 8).',
+    say: "Autre traitement possible dès le préhospitalier, en cas de haut risque hémorragique : le plasma OctaplasLG, prêt à l'emploi. Il est mis en avant en rouge lorsque le score BATT atteint 8.",
+  },
+  {
     actionId: 'prehosp.g.txa',
     value: true,
     offsetMin: 10,
     narration: 'SMUR — acide tranexamique administré (risque hémorragique, < 3 h).',
-    say: "Le SMUR administre l'acide tranexamique, dans les trois premières heures, en raison du risque hémorragique.",
+    say: "Le Smur administre l'acide tranexamique, dans les trois premières heures, en raison du risque hémorragique.",
   },
   {
     actionId: 'prehosp.scores.grade',
@@ -176,7 +184,7 @@ export const guidedSteps: GuidedStep[] = [
     offsetMin: 10,
     narration:
       'SMUR — attribution du GRADE A → 💥 le Niveau I (CHU) s’allume sur la régulation et la pré-alerte se débloque.',
-    say: "Le SMUR attribue le grade A, le plus grave. Le niveau 1, c'est-à-dire le CHU, s'allume sur la régulation, et la pré-alerte se débloque.",
+    say: "Le Smur attribue le grade A, le plus grave. Le niveau 1, c'est-à-dire le CHU, s'allume sur la régulation, et la pré-alerte se débloque.",
   },
   {
     actionId: 'regul.prealerte.centre',
@@ -227,7 +235,7 @@ export const guidedSteps: GuidedStep[] = [
     voicePanel: true,
     narration:
       'Sur le terrain, les mains sont prises : le SMUR peut tout saisir à la voix. Le panneau « Dictée vocale » (en bas à gauche) écoute des commandes simples.',
-    say: "Sur le terrain, les mains du médecin SMUR sont souvent prises. TEMPO propose donc une dictée vocale, ici en bas à gauche de l'écran. En disant par exemple : tension 86, fréquence cardiaque 110, FAST positif, instable, grade A, toutes les valeurs se cochent d'elles-mêmes. D'autres commandes existent : « dictée » pour démarrer, « synthèse » pour relire à voix haute ce qui a été saisi, « validé » pour confirmer, « correction » pour modifier, « conseils » pour énoncer les actions à mener et les constantes manquantes, et « terminé » pour arrêter. La dictée fonctionne sur Chrome ou Edge, avec l'accès au microphone.",
+    say: "Sur le terrain, les mains du médecin Smur sont souvent prises. TEMPO propose donc une dictée vocale, ici en bas à gauche de l'écran. En disant par exemple : tension 86, fréquence cardiaque 110, FAST positif, instable, grade A, toutes les valeurs se cochent d'elles-mêmes. D'autres commandes existent : « dictée » pour démarrer, « synthèse » pour relire à voix haute ce qui a été saisi, « validé » pour confirmer, « correction » pour modifier, « conseils » pour énoncer les actions à mener et les constantes manquantes, et « terminé » pour arrêter. La dictée fonctionne sur Chrome ou Edge, avec l'accès au microphone.",
     holdMs: 12000,
   },
 
