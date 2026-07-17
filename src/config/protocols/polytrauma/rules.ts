@@ -1,11 +1,13 @@
 import type { RuleDef } from '../../../types/model'
+import { buildGaugeRules } from '../../gaugeRules'
+import { actions } from './actions'
 
 /**
  * Déclencheurs inter-pistes — données pures « si condition → effet ».
  * C'est ici que se matérialise l'intrication régul / pré-hosp / intra-hosp.
  * Le médecin peut en ajouter / modifier sans toucher au moteur ni à l'UI.
  */
-export const rules: RuleDef[] = [
+const manualRules: RuleDef[] = [
   /* (1) FAST+ ET instable → fait clignoter l'onglet BLOC sur la régul ET l'intra-hosp */
   {
     id: 'r.fast-instable-bloc',
@@ -315,4 +317,16 @@ export const rules: RuleDef[] = [
       },
     ],
   },
+]
+
+/*
+ * (16+) ACSOS : une règle par jauge, générée depuis les seuils DÉJÀ déclarés
+ * dans les sous-champs de l'action « prehosp.acsos » (aucun seuil nouveau).
+ * Valeur renseignée et hors zone → la pastille ACSOS clignote.
+ */
+const acsosAction = actions.find((a) => a.id === 'prehosp.acsos')
+
+export const rules: RuleDef[] = [
+  ...manualRules,
+  ...(acsosAction ? buildGaugeRules(acsosAction) : []),
 ]
