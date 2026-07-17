@@ -38,7 +38,7 @@ jobs:
           # alors la saisie manuelle de l'adresse du serveur.
           VITE_SYNC_URL: ${{ vars.TEMPO_SYNC_URL }}
       - name: Préparation de l'artefact Pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
