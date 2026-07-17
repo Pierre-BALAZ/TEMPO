@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { evaluate } from '../engine/evaluate'
-import type { ActionDef, CaseState } from '../types/model'
+import type { CaseState } from '../types/model'
 import { buildGaugeRules } from './gaugeRules'
 import { polytraumaProtocol } from './protocols/polytrauma'
 
