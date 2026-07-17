@@ -23,7 +23,7 @@ export function TimelineRuler({ totalMinutes }: Props) {
           type="button"
           onClick={toggleCompact}
           title={compact ? 'Élargir la colonne (étiquettes)' : 'Réduire la colonne (icônes)'}
-          className="rounded p-1 text-slate-500 hover:bg-slate-200"
+          className="relative rounded-md p-1.5 text-slate-500 transition-colors before:absolute before:-inset-2 hover:bg-slate-200"
         >
           {compact ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
         </button>

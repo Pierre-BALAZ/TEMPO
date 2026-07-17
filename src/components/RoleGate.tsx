@@ -31,7 +31,7 @@ export function RoleGate() {
                 key={c.id}
                 type="button"
                 onClick={() => chooseRole(c.id)}
-                className={`flex items-center gap-3 rounded-xl border-2 bg-white px-4 py-4 text-start transition-colors ${c.cls}`}
+                className={`flex items-center gap-3 rounded-xl border-2 bg-white px-4 py-4 text-start transition-[background-color,transform] duration-150 ease-out active:scale-[0.96] ${c.cls}`}
               >
                 <Icon size={26} className="shrink-0" />
                 <span className="flex flex-col">

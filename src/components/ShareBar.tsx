@@ -47,9 +47,22 @@ export function ShareBar() {
       <button
         type="button"
         onClick={onCopy}
-        className="flex w-36 items-center justify-center gap-1.5 rounded-lg bg-slate-800 px-3 py-1.5 text-sm font-semibold text-white hover:bg-slate-700"
+        className="flex w-36 items-center justify-center gap-1.5 rounded-lg bg-slate-800 px-3 py-1.5 text-sm font-semibold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-slate-700 active:scale-[0.96]"
       >
-        {copied ? <Check size={15} /> : <Link2 size={15} />}
+        <span className="relative grid size-[15px] place-items-center">
+          <Check
+            size={15}
+            className={`col-start-1 row-start-1 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
+              copied ? 'scale-100 opacity-100 blur-0' : 'scale-[0.25] opacity-0 blur-[4px]'
+            }`}
+          />
+          <Link2
+            size={15}
+            className={`col-start-1 row-start-1 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
+              copied ? 'scale-[0.25] opacity-0 blur-[4px]' : 'scale-100 opacity-100 blur-0'
+            }`}
+          />
+        </span>
         {copied ? 'Lien copié\u00A0!' : 'Copier le lien'}
       </button>
       <button
@@ -57,7 +70,7 @@ export function ShareBar() {
         onClick={onWhatsApp}
         title="Partager le lien par WhatsApp"
         aria-label="Partager le lien par WhatsApp"
-        className="flex items-center justify-center rounded-lg bg-[oklch(0.761_0.201_149.74)] p-1.5 text-slate-900 hover:brightness-95"
+        className="relative flex items-center justify-center rounded-lg bg-[oklch(0.761_0.201_149.74)] p-2.5 text-slate-900 transition-[filter,transform] duration-150 ease-out before:absolute before:-inset-1 hover:brightness-95 active:scale-[0.96]"
       >
         <MessageCircle size={18} />
       </button>
@@ -65,7 +78,7 @@ export function ShareBar() {
         type="button"
         onClick={onPdf}
         title="Exporter le récapitulatif des actions en PDF"
-        className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
       >
         <FileDown size={15} /> Exporter PDF
       </button>
@@ -73,14 +86,14 @@ export function ShareBar() {
         type="button"
         onClick={() => window.open(window.location.href, '_blank', 'noopener')}
         title="Ouvrir une 2ᵉ fenêtre synchronisée (même machine)"
-        className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
       >
         <AppWindow size={15} /> 2ᵉ fenêtre
       </button>
       <button
         type="button"
         onClick={onReset}
-        className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
       >
         <RotateCcw size={15} /> Réinitialiser
       </button>

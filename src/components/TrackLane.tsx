@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Eye, Pencil } from 'lucide-react'
+import { ChevronDown, Eye, Pencil } from 'lucide-react'
 import type { ActionDef, DerivedUiState, SectionDef, TrackDef } from '../types/model'
 import { actionIndex, activeProtocol } from '../config'
 import { resolveValue } from '../engine/evaluate'
@@ -52,9 +52,9 @@ export function TrackLane({ track, derived, totalMinutes, dimmed }: Props) {
             type="button"
             onClick={() => toggleCollapsed(track.id)}
             title={collapsed ? 'Développer' : 'Réduire'}
-            className="rounded p-0.5 hover:bg-white/20"
+            className="relative -m-1 rounded p-1.5 transition-colors before:absolute before:-inset-2 hover:bg-white/20"
           >
-            {collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+            <ChevronDown size={16} className={`transition-transform duration-200 ${collapsed ? '-rotate-90' : ''}`} />
           </button>
           {!compact && <span className="grow leading-tight">{track.label}</span>}
           {roleChosen && (
@@ -206,7 +206,10 @@ function MiniIcon({
   const highlighted = Boolean(effect?.highlighted) && !locked
   const levelStyle = effect?.level ? LEVEL_STYLES[effect.level] : undefined
 
-  const classes = ['absolute grid place-items-center rounded-md border transition-all']
+  const classes = [
+    'absolute grid place-items-center rounded-md border transition-[color,background-color,border-color,box-shadow] before:absolute before:-inset-[3px]',
+  ]
+  if (!action.detail) classes.push('cursor-default')
   if (locked) classes.push('border-dashed border-slate-300 bg-slate-100 text-slate-300')
   else if (checkboxDone) classes.push('border-emerald-300 bg-emerald-100 text-emerald-700')
   else if (filled) classes.push('border-sky-300 bg-sky-100 text-sky-700')

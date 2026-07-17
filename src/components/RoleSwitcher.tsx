@@ -14,7 +14,7 @@ export function RoleSwitcher() {
   const setActiveRole = useUiStore((s) => s.setActiveRole)
 
   return (
-    <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1 text-sm">
+    <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-0.5 text-sm">
       <span className="px-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
         Je suis
       </span>
@@ -23,7 +23,7 @@ export function RoleSwitcher() {
           key={r.id}
           type="button"
           onClick={() => setActiveRole(r.id)}
-          className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+          className={`relative rounded-md px-2.5 py-1.5 font-medium transition-colors before:absolute before:-inset-y-1.5 ${
             activeRole === r.id ? r.active : 'text-slate-600 hover:bg-slate-100'
           }`}
         >

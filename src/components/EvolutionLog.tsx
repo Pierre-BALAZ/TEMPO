@@ -45,7 +45,7 @@ export function EvolutionLog({ actionId, editable }: { actionId: string; editabl
             type="button"
             onClick={add}
             disabled={draft.trim() === ''}
-            className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-slate-700 disabled:opacity-40"
+            className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors enabled:hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Plus size={15} /> Ajouter la note (horodatée maintenant)
           </button>
@@ -70,7 +70,7 @@ export function EvolutionLog({ actionId, editable }: { actionId: string; editabl
                   type="button"
                   onClick={() => remove(e.at)}
                   aria-label="Supprimer la note"
-                  className="shrink-0 rounded p-0.5 text-slate-300 hover:bg-slate-200 hover:text-slate-600"
+                  className="relative -m-1 shrink-0 rounded-md p-1.5 text-slate-300 transition-colors before:absolute before:-inset-x-2 before:-inset-y-1.5 hover:bg-slate-200 hover:text-slate-600"
                 >
                   <X size={14} />
                 </button>

@@ -81,7 +81,7 @@ export function SyncControl() {
           <button
             type="button"
             onClick={() => setShowSettings((v) => !v)}
-            className="rounded p-1 text-slate-400 hover:bg-slate-100"
+            className="relative rounded-md p-2 text-slate-400 transition-colors before:absolute before:-inset-y-1.5 hover:bg-slate-100"
             title="Réglage du serveur"
             aria-label="Réglage du serveur"
           >
@@ -91,8 +91,10 @@ export function SyncControl() {
             type="button"
             onClick={() => setEnabled((v) => !v)}
             disabled={!canSync}
-            className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-sm font-semibold text-white disabled:opacity-40 ${
-              enabled ? 'bg-rose-600 hover:bg-rose-700' : 'bg-emerald-600 hover:bg-emerald-700'
+            className={`relative flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-semibold text-white transition-colors before:absolute before:-inset-y-1.5 disabled:cursor-not-allowed disabled:opacity-40 ${
+              enabled
+                ? 'bg-rose-600 enabled:hover:bg-rose-700'
+                : 'bg-emerald-600 enabled:hover:bg-emerald-700'
             }`}
           >
             {enabled ? <WifiOff size={14} /> : <Wifi size={14} />}

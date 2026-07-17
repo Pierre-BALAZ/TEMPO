@@ -73,6 +73,7 @@ export function BurnBodyMap({ actionId, editable }: Props) {
                   fill={fill}
                   stroke={stroke}
                   strokeWidth={1.5}
+                  style={{ transition: 'fill 150ms, stroke 150ms' }}
                 />
               ) : (
                 <rect
@@ -84,6 +85,7 @@ export function BurnBodyMap({ actionId, editable }: Props) {
                   fill={fill}
                   stroke={stroke}
                   strokeWidth={1.5}
+                  style={{ transition: 'fill 150ms, stroke 150ms' }}
                 />
               )}
               <text
@@ -115,7 +117,7 @@ export function BurnBodyMap({ actionId, editable }: Props) {
           <button
             type="button"
             onClick={clearAll}
-            className="rounded border border-slate-200 px-2 py-0.5 font-medium text-slate-600 hover:bg-slate-50"
+            className="relative rounded border border-slate-200 px-2.5 py-1.5 font-medium text-slate-600 transition-colors before:absolute before:-inset-y-1.5 hover:bg-slate-50"
           >
             Tout effacer
           </button>

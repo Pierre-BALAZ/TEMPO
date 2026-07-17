@@ -76,7 +76,7 @@ export function Stopwatch() {
             <button
               type="button"
               onClick={stop}
-              className="flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-sm font-bold text-white hover:bg-rose-700"
+              className="flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-sm font-bold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-rose-700 active:scale-[0.96]"
             >
               <Pause size={16} /> Arrêter
             </button>
@@ -84,7 +84,7 @@ export function Stopwatch() {
             <button
               type="button"
               onClick={resume}
-              className="flex items-center gap-1.5 rounded-lg bg-slate-800 px-3 py-2 text-sm font-bold text-white hover:bg-slate-700"
+              className="flex items-center gap-1.5 rounded-lg bg-slate-800 px-3 py-2 text-sm font-bold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-slate-700 active:scale-[0.96]"
             >
               <Play size={16} /> Reprendre
             </button>

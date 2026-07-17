@@ -115,7 +115,7 @@ export function GuidedPlayer() {
             ? 'Visite commentée à voix haute\u00A0: principe, déroulé, interfaces, synthèse'
             : 'Visite guidée pas à pas\u00A0: principe, déroulé, interfaces, synthèse'
         }
-        className="flex shrink-0 items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:from-indigo-700 hover:to-violet-700"
+        className="flex shrink-0 items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 py-2 pl-2.5 pr-3 text-sm font-semibold text-white shadow-sm transition-[filter,transform] duration-150 ease-out hover:brightness-110 active:scale-[0.96]"
       >
         <Play size={15} className="fill-white" /> Démo guidée
       </button>
@@ -135,7 +135,7 @@ export function GuidedPlayer() {
           <button
             type="button"
             onClick={restart}
-            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
           >
             <RotateCcw size={15} /> Rejouer
           </button>
@@ -143,7 +143,7 @@ export function GuidedPlayer() {
           <button
             type="button"
             onClick={playing ? pause : play}
-            className="flex w-28 items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="flex w-28 items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
           >
             {playing ? <Pause size={15} /> : <Play size={15} />}
             {playing ? 'Pause' : 'Reprendre'}
@@ -154,7 +154,7 @@ export function GuidedPlayer() {
           type="button"
           onClick={restart}
           title="Recommencer depuis le début"
-          className="flex items-center gap-1.5 rounded-lg border border-indigo-300 bg-white px-2.5 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+          className="relative flex items-center gap-1.5 rounded-lg border border-indigo-300 bg-white p-2.5 text-sm font-medium text-indigo-700 transition-colors before:absolute before:-inset-1 hover:bg-indigo-100"
         >
           <RotateCcw size={15} />
         </button>
@@ -170,7 +170,7 @@ export function GuidedPlayer() {
                 ? 'Couper la narration'
                 : 'Activer la narration'
           }
-          className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm font-medium ${
+          className={`relative flex items-center gap-1.5 rounded-lg border p-2.5 text-sm font-medium transition-colors before:absolute before:-inset-1 disabled:cursor-not-allowed ${
             voiceOn && ttsSupported
               ? 'border-indigo-300 bg-white text-indigo-700 hover:bg-indigo-100'
               : 'border-slate-200 bg-white text-slate-400'
@@ -185,7 +185,7 @@ export function GuidedPlayer() {
               key={s}
               type="button"
               onClick={() => setSpeed(s)}
-              className={`rounded px-1.5 py-0.5 font-semibold ${
+              className={`relative min-w-[2.25rem] rounded-md px-2 py-1.5 font-semibold transition-colors before:absolute before:-inset-y-1 ${
                 speed === s ? 'bg-indigo-600 text-white' : 'text-indigo-600 hover:bg-indigo-100'
               }`}
             >
@@ -202,14 +202,14 @@ export function GuidedPlayer() {
           type="button"
           onClick={exit}
           title="Quitter la démo guidée"
-          className="ml-auto rounded-md p-1 text-indigo-400 hover:bg-indigo-100 hover:text-indigo-700"
+          className="relative ml-auto -my-1.5 -mr-1.5 rounded-md p-2.5 text-indigo-400 transition-colors before:absolute before:-inset-1 hover:bg-indigo-100 hover:text-indigo-700"
         >
           <X size={18} />
         </button>
       </div>
 
       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-indigo-100">
-        <div className="h-full rounded-full bg-indigo-500 transition-all duration-300" style={{ width: `${pct}%` }} />
+        <div className="h-full rounded-full bg-indigo-500 transition-[width] duration-300" style={{ width: `${pct}%` }} />
       </div>
 
       <p className="mt-2 max-w-prose text-pretty text-sm leading-normal text-indigo-900">

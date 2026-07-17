@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Check, Clock, X } from 'lucide-react'
 import type { ActionValue, SubField } from '../types/model'
 import { protocolIndex } from '../config'
@@ -19,6 +20,17 @@ export function ActionDetailPanel() {
   const editable = useUiStore((s) =>
     action ? canEditTrack(s.activeRole, s.roleChosen, action.trackId) : false,
   )
+
+  // Fermeture au clavier (Échap), comme le clic sur l'overlay.
+  useEffect(() => {
+    if (!openActionId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeAction()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [openActionId, closeAction])
+
   if (!action) return null
 
   const track = protocolIndex.trackMap.get(action.trackId)
@@ -47,7 +59,7 @@ export function ActionDetailPanel() {
           <button
             type="button"
             onClick={closeAction}
-            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="-m-2 rounded-md p-3 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
             aria-label="Fermer"
           >
             <X size={20} />
@@ -131,7 +143,7 @@ function SubFieldInput({
       <button
         type="button"
         onClick={() => onChange(!checked)}
-        className="flex items-start gap-2 rounded-md border border-slate-200 px-2.5 py-2 text-start text-sm hover:bg-slate-50"
+        className="flex items-start gap-2 rounded-md border border-slate-200 px-2.5 py-2 text-start text-sm transition-colors hover:bg-slate-50"
       >
         <span
           className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border ${
@@ -152,7 +164,7 @@ function SubFieldInput({
         <button
           type="button"
           onClick={() => onChange(recorded ? null : formatClock(Date.now()))}
-          className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-sm font-medium tabular-nums ${
+          className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-sm font-medium tabular-nums transition-colors ${
             recorded
               ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
               : 'border-slate-300 text-slate-700 hover:bg-slate-50'
@@ -166,7 +178,7 @@ function SubFieldInput({
             type="button"
             onClick={() => onChange(null)}
             aria-label="Effacer"
-            className="rounded p-1 text-slate-400 hover:bg-slate-100"
+            className="relative -m-1.5 rounded-md p-2.5 text-slate-400 transition-colors before:absolute before:-inset-y-1 hover:bg-slate-100"
           >
             <X size={14} />
           </button>

@@ -23,6 +23,14 @@ body {
   font-synthesis: none;
 }
 
+/* Focus clavier visible sur tous les contrôles (les inputs gardent leur focus:border-*). */
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 2px solid oklch(0.585 0.233 277.117);
+  outline-offset: 2px;
+}
+
 /* Placeholders lisibles par défaut (le gray-400 du preflight tombe à ~2,5:1 sur blanc) ;
    les utilitaires Tailwind placeholder:* restent prioritaires. */
 ::placeholder {

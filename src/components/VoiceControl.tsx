@@ -29,7 +29,7 @@ export function VoiceControl() {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded p-1 text-slate-400 hover:bg-slate-100"
+              className="relative -m-1 rounded-md p-2 text-slate-400 transition-colors before:absolute before:-inset-1.5 hover:bg-slate-100"
               aria-label="Réduire"
             >
               <ChevronDown size={16} />
@@ -52,7 +52,7 @@ export function VoiceControl() {
               <button
                 type="button"
                 onClick={v.listening ? v.stop : v.start}
-                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white ${
+                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white transition-colors ${
                   v.listening ? 'bg-rose-600 hover:bg-rose-700' : 'bg-emerald-600 hover:bg-emerald-700'
                 }`}
               >
@@ -93,7 +93,7 @@ export function VoiceControl() {
                   <button
                     type="button"
                     onClick={v.clear}
-                    className="mt-1 self-start text-[11px] text-slate-400 underline hover:text-slate-600"
+                    className="relative -mx-1 -my-1.5 mt-1 self-start px-1 py-1.5 text-[11px] text-slate-500 underline transition-colors before:absolute before:-inset-y-2 hover:text-slate-600"
                   >
                     Vider la liste
                   </button>
@@ -138,7 +138,7 @@ export function VoiceControl() {
               else v.start()
             }}
             title={v.listening ? 'Couper la dictée vocale' : 'Activer la dictée vocale'}
-            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold ${
+            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
               v.listening
                 ? 'bg-rose-600 text-white hover:bg-rose-700'
                 : 'text-slate-700 hover:bg-slate-50'
@@ -153,7 +153,7 @@ export function VoiceControl() {
             onClick={() => setOpen(true)}
             title="Ouvrir le panneau"
             aria-label="Ouvrir le panneau de dictée"
-            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100"
+            className="relative rounded-full p-2 text-slate-400 transition-colors before:absolute before:-inset-x-1 before:-inset-y-1.5 hover:bg-slate-100"
           >
             <ChevronUp size={16} />
           </button>

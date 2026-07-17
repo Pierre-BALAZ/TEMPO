@@ -71,7 +71,7 @@ export default function App() {
           <button
             type="button"
             onClick={() => setAllCollapsed(!allCollapsed)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
           >
             {allCollapsed ? <Maximize2 size={15} /> : <Minimize2 size={15} />}
             {allCollapsed ? 'Tout développer' : 'Tout réduire'}

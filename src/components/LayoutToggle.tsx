@@ -6,7 +6,8 @@ export function LayoutToggle() {
   const layout = useUiStore((s) => s.layout)
   const setLayout = useUiStore((s) => s.setLayout)
 
-  const base = 'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-sm font-medium transition-colors'
+  const base =
+    'relative flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors before:absolute before:-inset-y-1.5'
   const on = 'bg-slate-900 text-white'
   const off = 'text-slate-600 hover:bg-slate-100'
 

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { ListOrdered, Printer, X } from 'lucide-react'
 import { activeProtocol, actionIndex } from '../config'
 import { useCaseStore } from '../store/caseStore'
@@ -10,6 +11,16 @@ export function RecapButton() {
   const setOpen = useUiStore((s) => s.setRecapOpen)
   const caseState = useCaseStore((s) => s.caseState)
   const items = buildRecap(caseState, activeProtocol, actionIndex)
+
+  // Fermeture au clavier (Échap), comme le clic sur l'overlay.
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, setOpen])
 
   const print = () => {
     const html = recapPrintHtml(items, caseState)
@@ -30,7 +41,7 @@ export function RecapButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-600 hover:bg-slate-50"
+        className="relative flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-600 transition-colors before:absolute before:-inset-y-1.5 hover:bg-slate-50"
         title="Récapitulatif chronologique"
       >
         <ListOrdered size={15} /> Récap
@@ -52,14 +63,14 @@ export function RecapButton() {
                 <button
                   type="button"
                   onClick={print}
-                  className="flex items-center gap-1.5 rounded-md bg-slate-900 px-2.5 py-1 text-sm font-semibold text-white hover:bg-slate-700"
+                  className="flex items-center gap-1.5 rounded-md bg-slate-900 px-2.5 py-1 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
                 >
                   <Printer size={14} /> Imprimer / PDF
                 </button>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded p-1 text-slate-400 hover:bg-slate-100"
+                  className="relative -m-1.5 rounded-md p-2.5 text-slate-400 transition-colors before:absolute before:-inset-y-1 hover:bg-slate-100"
                   aria-label="Fermer"
                 >
                   <X size={18} />

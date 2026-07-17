@@ -40,7 +40,7 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
   const CategoryIcon = iconForCategory(action.category)
 
   const classes = [
-    'rounded-lg border px-2.5 py-1.5 text-start shadow-sm transition-all',
+    'rounded-lg border px-2.5 py-1.5 text-start shadow-sm transition-[color,background-color,border-color,opacity,box-shadow,transform]',
     'flex flex-col justify-between overflow-hidden',
     flow ? 'relative w-full' : 'absolute',
   ]
@@ -82,7 +82,7 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
             onClick={() => setValue(action.id, !checkboxDone)}
             aria-label={checkboxDone ? 'Décocher' : 'Cocher'}
             className={[
-              'mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border',
+              'relative mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border before:absolute before:-inset-2.5',
               checkboxDone ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white',
               inputsDisabled ? 'cursor-not-allowed' : '',
             ].join(' ')}
@@ -104,7 +104,7 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
             type="button"
             onClick={() => openAction(action.id)}
             aria-label="Détail"
-            className="shrink-0 text-slate-400 hover:text-slate-700"
+            className="relative shrink-0 text-slate-400 transition-colors before:absolute before:-inset-3 hover:text-slate-700"
           >
             <Info size={13} />
           </button>
@@ -116,7 +116,7 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
           <button
             type="button"
             onClick={() => openAction(action.id)}
-            className="flex items-center gap-1 rounded border border-slate-300 px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-slate-600 hover:bg-slate-50"
+            className="relative flex items-center gap-1 rounded border border-slate-300 px-1.5 py-1 text-[11px] font-medium tabular-nums text-slate-600 transition-colors before:absolute before:-inset-y-2 hover:bg-slate-50"
           >
             <NotebookPen size={12} />
             {logCount > 0 ? `${logCount} note${logCount > 1 ? 's' : ''}` : 'Ajouter une note'}
