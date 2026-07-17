@@ -26,7 +26,7 @@ export function ShareBar() {
   const onWhatsApp = () => {
     const url = buildShareUrl(caseState)
     writeCaseToHash(caseState)
-    const text = encodeURIComponent(`Partition d’urgence — suivez le cas : ${url}`)
+    const text = encodeURIComponent(`TEMPO — partition d’urgence — suivez le cas : ${url}`)
     window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener')
   }
 

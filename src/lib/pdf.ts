@@ -59,7 +59,7 @@ export async function exportCasePdf(caseState: CaseState, protocol: Protocol): P
   }
 
   // En-tête
-  line('Partition d’urgence — récapitulatif', { size: 18, style: 'bold' })
+  line('TEMPO — partition d’urgence — récapitulatif', { size: 18, style: 'bold' })
   line(protocol.label, { size: 11, color: [100, 116, 139], gap: 6 })
 
   const h = caseState.header

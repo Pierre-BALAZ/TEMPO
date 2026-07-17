@@ -1,6 +1,6 @@
 {
-  "name": "Partition d'urgence — Traumatisé sévère",
-  "short_name": "Partition",
+  "name": "TEMPO — partition d'urgence",
+  "short_name": "TEMPO",
   "description": "Parcours du traumatisé sévère visualisé comme une partition à 3 pistes (régulation, pré-hospitalier, intra-hospitalier) sur une timeline commune.",
   "lang": "fr",
   "start_url": "./",

@@ -1,5 +1,5 @@
 /**
- * Marque « Partition d'urgence » : un triolet de doubles croches (double poutre)
+ * Marque « TEMPO » (partition d'urgence) : un triolet de doubles croches (double poutre)
  * dont les têtes de notes évoquent les trois phases (régulation, SMUR, hôpital).
  * Version compacte (sans glyphes, illisibles en petit) pour l'en-tête ; le logo
  * détaillé avec casque / ambulance / H est dans public/logo.svg et les icônes.
@@ -8,7 +8,7 @@ export function Logo({ size = 34, className }: { size?: number; className?: stri
   const INK = '#111827'
   const lines = [23.8, 28.4, 33, 37.6, 42.2]
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" className={className} role="img" aria-label="Partition d'urgence">
+    <svg width={size} height={size} viewBox="0 0 64 64" className={className} role="img" aria-label="TEMPO — partition d'urgence">
       {lines.map((y, i) => (
         <line key={i} x1="8" y1={y} x2="56" y2={y} stroke={INK} strokeWidth="1.2" strokeLinecap="round" opacity="0.85" />
       ))}

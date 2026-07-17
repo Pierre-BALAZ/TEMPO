@@ -163,7 +163,7 @@ export function recapPrintHtml(items: RecapItem[], caseState: CaseState): string
     .foot{margin-top:14px;font-size:10px;color:#94a3b8}
     @media print{body{margin:12mm}}
   </style></head><body>
-  <h1>TEMPO — Partition d'urgence · récap chronologique</h1>
+  <h1>TEMPO — partition d'urgence · récap chronologique</h1>
   <div class="sub">Patient (anonyme) : <b>${esc(patient)}</b>${date ? ' · ' + esc(date) : ''}${
     intervenants ? ' · ' + esc(intervenants) : ''
   }</div>

@@ -42,7 +42,7 @@ export default function App() {
         <div className="flex items-center gap-2">
           <Logo size={34} className="shrink-0" />
           <h1 className="text-xl font-extrabold text-slate-900 sm:text-2xl">
-            Partition d’urgence — Traumatisé sévère
+            TEMPO <span className="font-semibold text-slate-500">— partition d’urgence</span>
           </h1>
         </div>
         <p className="text-sm text-slate-500">
@@ -52,7 +52,7 @@ export default function App() {
         <p className="text-xs text-slate-500">
           Réalisé par le <strong className="font-semibold text-slate-700">Dr Félix AMIOT</strong> (SMUR / Urgences / SAMU 50 —
           CH Saint-Lô) et le <strong className="font-semibold text-slate-700">Dr Pierre BALAZ</strong> (BMPM).
-          © Tous droits réservés — les auteurs en détiennent la propriété intellectuelle.
+          Projet open source — licence MIT.
         </p>
       </header>
 
@@ -104,10 +104,10 @@ export default function App() {
       <Legend />
 
       <footer className="pb-6 text-center text-[11px] text-slate-400">
-        Prototype « partition d’urgence » · sources : Vittel, RESUVAL, score ABC, BATT, CRASH-2,
+        TEMPO — partition d’urgence · sources : Vittel, RESUVAL, score ABC, BATT, CRASH-2,
         Wallace.
         <br />
-        © Dr Félix AMIOT (SMUR / Urgences / SAMU 50 — CH Saint-Lô) &amp; Dr Pierre BALAZ (BMPM) — propriété intellectuelle réservée.
+        © 2026 Dr Félix AMIOT (SMUR / Urgences / SAMU 50 — CH Saint-Lô) &amp; Dr Pierre BALAZ (BMPM) — open source (licence MIT).
       </footer>
 
       <ActionDetailPanel />

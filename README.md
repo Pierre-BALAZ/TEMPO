@@ -1,7 +1,8 @@
 # TEMPO — partition d'urgence
 
-Prototype cliquable : le parcours d'un **traumatisé sévère** visualisé comme une **partition à
-3 pistes** sur une **timeline temporelle commune**, façon Songsterr.
+**Projet open source** ([licence MIT](LICENSE)). Application cliquable : le parcours d'un
+**traumatisé sévère** visualisé comme une **partition à 3 pistes** sur une **timeline
+temporelle commune**, façon Songsterr.
 
 - **Régulation** (SAMU / Centre 15)
 - **Pré-hospitalier** (SMUR / VSAV)
