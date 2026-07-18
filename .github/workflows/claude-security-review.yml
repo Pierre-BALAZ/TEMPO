@@ -26,6 +26,8 @@ jobs:
           # GITHUB_TOKEN natif : évite l'échange de token via l'app GitHub Claude
           # (non installée sur ce compte — installation possible uniquement par le propriétaire)
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Autorise les PR dependabot (le token est aussi posé en secret Dependabot)
+          allowed_bots: "dependabot[bot]"
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
