@@ -1,5 +1,10 @@
 # TEMPO — partition d'urgence
 
+<p align="center">
+  <img src="public/branding/tempo-accroche.png" width="720"
+       alt="Bannière TEMPO — Traumatisé : Équipes Mobilisées, Parcours Orchestré. Plusieurs lignes convergent en une timeline commune fléchée, ponctuée de trois jalons (bleu, orange, rose)." />
+</p>
+
 **Projet open source** ([licence MIT](LICENSE)). Application cliquable : le parcours d'un
 **traumatisé sévère** visualisé comme une **partition à 3 pistes** sur une **timeline
 temporelle commune**, façon Songsterr.

@@ -1,6 +1,7 @@
 import { Building2, Eye, Radio, Truck } from 'lucide-react'
 import type { Role } from '../store/uiStore'
 import { useUiStore } from '../store/uiStore'
+import logoUrl from '../assets/tempo-logo.png'
 
 const CHOICES: { id: Role; label: string; desc: string; cls: string; icon: typeof Radio }[] = [
   { id: 'regul', label: 'Régulateur', desc: 'SAMU / Centre 15', cls: 'border-sky-300 hover:bg-sky-50 text-sky-700', icon: Radio },
@@ -18,6 +19,8 @@ export function RoleGate() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
       <div className="gate-card w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl">
+        {/* Marque : décoratif (le nom est déjà porté par l'en-tête de l'app) → alt vide. */}
+        <img src={logoUrl} alt="" draggable={false} className="mx-auto mb-4 h-24 w-auto rounded-lg sm:h-28" />
         <h2 className="text-balance text-xl font-extrabold text-slate-900">Qui êtes-vous sur ce cas&nbsp;?</h2>
         <p className="mt-1 max-w-prose text-pretty text-sm text-slate-500">
           Vous pourrez <strong>renseigner votre ligne</strong> et <strong>lire</strong> les deux autres
