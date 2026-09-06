@@ -200,12 +200,20 @@ export interface RuleDef {
   then: Effect[]
 }
 
+/** Jalon (milestone) pour marquer les étapes du parcours. */
+export interface MilestoneDef {
+  id: string
+  label: string
+  trackId: string
+}
+
 export interface Protocol {
   id: string
   label: string
   tracks: TrackDef[]
   actions: ActionDef[]
   rules: RuleDef[]
+  milestones?: MilestoneDef[]
 }
 
 /* ------------------------------------------------------------------ */
@@ -218,6 +226,8 @@ export interface ValueEntry {
   value: ActionValue
   /** Horodatage du passage à « fait / rempli » (epoch ms). */
   completedAt?: number
+  /** Horodatage de la dernière mise à jour (epoch ms). */
+  updatedAt?: number
 }
 
 export interface CaseHeader {
