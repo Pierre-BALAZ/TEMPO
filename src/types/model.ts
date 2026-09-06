@@ -138,6 +138,11 @@ export interface ActionDef {
   lockedByDefault?: boolean
   /** Catégorie (icône de la timeline réduite + glyphe de la pastille). */
   category?: ActionCategory
+  /**
+   * Si true, cette action numérique affiche un historique horodaté avec flèches de tendance.
+   * Permet de tracker l'évolution des constantes (PAS, FC, SpO₂, FR, etc.).
+   */
+  timestamped?: boolean
 }
 
 /** Un « onglet » / section d'une piste (ex. BLOC, Transfusion massive) — peut clignoter. */

@@ -117,7 +117,6 @@ export function ActionDetailPanel() {
                   return (
                     <SubFieldInput
                       key={sf.id}
-                      actionId={action.id}
                       subField={sf}
                       value={values[key]?.value ?? null}
                       onChange={(v) => setValue(key, v)}
@@ -151,12 +150,10 @@ export function ActionDetailPanel() {
 }
 
 function SubFieldInput({
-  actionId,
   subField,
   value,
   onChange,
 }: {
-  actionId: string
   subField: SubField
   value: ActionValue
   onChange: (v: ActionValue) => void
