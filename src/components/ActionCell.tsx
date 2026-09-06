@@ -99,7 +99,7 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
           {action.label}
         </span>
 
-        {action.detail && (
+        {(action.detail || action.timestamped) && (
           <button
             type="button"
             onClick={() => openAction(action.id)}
@@ -142,6 +142,16 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
   )
 }
 
+/** Extrait la dernière valeur d'un historique horodaté "ts:val|ts:val|…". */
+function latestTimestampedValue(value: ActionValue): number | null {
+  if (typeof value !== 'string' || value === '') return null
+  const parts = value.split('|')
+  const last = parts[parts.length - 1]
+  const val = last.split(':')[1]
+  const n = parseFloat(val)
+  return isNaN(n) ? null : n
+}
+
 function renderEditor(
   action: ActionDef,
   value: ActionValue,
@@ -155,6 +165,22 @@ function renderEditor(
 
   switch (action.type) {
     case 'number':
+      if (action.timestamped) {
+        // Constante horodatée : la saisie se fait dans le panneau (historique + tendance).
+        const last = latestTimestampedValue(value)
+        return (
+          <span className="text-[11px] tabular-nums text-slate-600">
+            {last !== null ? (
+              <>
+                {last}
+                {action.unit && <span className="ml-0.5 text-[10px] text-slate-400">{action.unit}</span>}
+              </>
+            ) : (
+              <span className="italic text-slate-400">via détail ⓘ</span>
+            )}
+          </span>
+        )
+      }
       return (
         <input
           type="number"

@@ -4,7 +4,6 @@ import { Logo } from './components/Logo'
 import { CaseHeader } from './components/CaseHeader'
 import { RoleSwitcher } from './components/RoleSwitcher'
 import { ShareBar } from './components/ShareBar'
-import { SyncControl } from './components/SyncControl'
 import { ScoreBoard } from './components/ScoreBoard'
 import { PupitreBoard } from './components/PupitreBoard'
 import { LayoutToggle } from './components/LayoutToggle'
@@ -87,8 +86,6 @@ export default function App() {
         </div>
         <ShareBar />
       </div>
-
-      <SyncControl />
 
       <MilestoneChime />
 
