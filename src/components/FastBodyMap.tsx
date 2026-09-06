@@ -1,4 +1,4 @@
-import { Check, X, HelpCircle } from 'lucide-react'
+import { Check, HelpCircle } from 'lucide-react'
 
 export interface FastZones {
   pericarde?: string | null

@@ -69,12 +69,12 @@ export function ActionDetailPanel() {
         {action.id === 'prehosp.c.fast' && (
           <FastBodyMap
             zones={{
-              pericarde: values[`${action.id}::pericarde`] as string | null,
-              hemo_droit: values[`${action.id}::hemo_droit`] as string | null,
-              hemo_gauche: values[`${action.id}::hemo_gauche`] as string | null,
-              bassin: values[`${action.id}::bassin`] as string | null,
-              pnx_droit: values[`${action.id}::pnx_droit`] as string | null,
-              pnx_gauche: values[`${action.id}::pnx_gauche`] as string | null,
+              pericarde: (values[`${action.id}::pericarde`]?.value as string) ?? null,
+              hemo_droit: (values[`${action.id}::hemo_droit`]?.value as string) ?? null,
+              hemo_gauche: (values[`${action.id}::hemo_gauche`]?.value as string) ?? null,
+              bassin: (values[`${action.id}::bassin`]?.value as string) ?? null,
+              pnx_droit: (values[`${action.id}::pnx_droit`]?.value as string) ?? null,
+              pnx_gauche: (values[`${action.id}::pnx_gauche`]?.value as string) ?? null,
             }}
             onZoneChange={(zoneId, value) => {
               if (editable) {
@@ -92,13 +92,11 @@ export function ActionDetailPanel() {
 
         {action.type === 'number' && action.timestamped && (
           <TimestampedValueHistory
-            actionId={action.id}
-            subFieldId=""
             label={action.label}
             unit={action.unit}
-            currentValue={typeof values[action.id]?.value === 'string' ? (values[action.id].value as string) : null}
+            currentValue={(values[action.id]?.value as string) ?? null}
             onAddValue={(val, ts) => {
-              const existing = typeof values[action.id]?.value === 'string' ? `${values[action.id].value}|` : ''
+              const existing = values[action.id]?.value ? `${values[action.id].value}|` : ''
               setValue(action.id, `${existing}${ts}:${val}`)
             }}
             editable={editable}
@@ -187,8 +185,6 @@ function SubFieldInput({
     const currentRaw = typeof value === 'string' ? value : null
     return (
       <TimestampedValueHistory
-        actionId={actionId}
-        subFieldId={subField.id}
         label={subField.label}
         unit={subField.unit}
         currentValue={currentRaw}

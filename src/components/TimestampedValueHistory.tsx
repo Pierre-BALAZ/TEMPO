@@ -7,8 +7,6 @@ interface HistoryEntry {
 }
 
 interface Props {
-  actionId: string
-  subFieldId: string
   label: string
   unit?: string
   currentValue: string | null
@@ -21,8 +19,6 @@ interface Props {
  * Format de stockage : "timestamp1:value1|timestamp2:value2|..."
  */
 export function TimestampedValueHistory({
-  actionId,
-  subFieldId,
   label,
   unit,
   currentValue,
