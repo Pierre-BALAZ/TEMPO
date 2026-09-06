@@ -1,13 +1,7 @@
-# TEMPO — partition d'urgence
+# Partition d'urgence — prototype
 
-<p align="center">
-  <img src="public/branding/tempo-accroche.png" width="720"
-       alt="Bannière TEMPO — Traumatisé : Équipes Mobilisées, Parcours Orchestré. Plusieurs lignes convergent en une timeline commune fléchée, ponctuée de trois jalons (bleu, orange, rose)." />
-</p>
-
-**Projet open source** ([licence MIT](LICENSE)). Application cliquable : le parcours d'un
-**traumatisé sévère** visualisé comme une **partition à 3 pistes** sur une **timeline
-temporelle commune**, façon Songsterr.
+Prototype cliquable (preuve de concept) : le parcours d'un **traumatisé sévère** visualisé
+comme une **partition à 3 pistes** sur une **timeline temporelle commune**, façon Songsterr.
 
 - **Régulation** (SAMU / Centre 15)
 - **Pré-hospitalier** (SMUR / VSAV)
@@ -18,18 +12,9 @@ fait clignoter** des actions ailleurs (ex. FAST+ et instable → l'onglet BLOC c
 régul et l'intra-hosp ; score ABC ≥ 2 → transfusion massive ; grade → niveau de trauma center).
 
 > ⚠️ Démonstration à **données fictives**. Aucun champ patient. Le contenu clinique
-> (actions, seuils, mappings) est à **valider** par le médecin référent — voir
-> [docs/PROPOSITIONS-CLINIQUES.md](docs/PROPOSITIONS-CLINIQUES.md).
+> (actions, seuils, mappings) est à **valider** par le médecin référent — voir le plan.
 
-## 🌐 Démo en ligne
-
-**https://pierre-balaz.github.io/TEMPO/**
-
-Chaque merge sur `main` est **déployé automatiquement** sur GitHub Pages
-(workflow [`deploy.yml`](.github/workflows/deploy.yml)). Détails et runbook :
-[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
-
-## Démarrer (développement)
+## Démarrer
 
 ```bash
 npm install
@@ -44,30 +29,17 @@ Dans l'app :
 - **« Démo guidée (pas à pas) »** : rejoue le cas action par action (on « voit » chaque clic et
   les cascades se déclencher) — lecture / pause / vitesse 0,5–2× / recommencer. Idéal en présentation.
 - **« Scénario démo »** : charge instantanément le même cas (instable, grade A) entièrement pré-rempli.
-- **« Copier le lien »** / **« WhatsApp »** : partage un **instantané** de l'état via une URL (sans
-  backend).
+- **« Copier le lien »** / **« WhatsApp »** : partage l'état via une URL (sans backend ; le lien
+  n'est utile à un destinataire distant que si l'app est hébergée à une URL publique).
 - **« Exporter PDF »** : télécharge un récap chronologique horodaté des actions réalisées.
-- **« Tout réduire »** : condense chaque piste en une rangée de **mini-icônes** (détail au survol).
+- **« Tout réduire »** : condense chaque piste en une rangée de **mini-icônes** (détail au survol) ;
+  un chevron par piste permet de réduire/développer individuellement.
 - **« 2ᵉ fenêtre »** : ouvre une fenêtre synchronisée en temps réel (même machine).
-- **Dictée vocale** : renseigne les constantes à la voix (navigateurs compatibles).
 
 Le **score de Vittel** est une checklist structurée (5 catégories dont la cinétique) ouverte via
 l'icône ⓘ de sa pastille ; ≥ 1 critère coché → « traumatisé sévère » (met en avant le grade).
 
-## Synchro « salle commune » (plusieurs machines)
-
-Trois niveaux de partage, du plus simple au plus complet :
-
-1. **Lien instantané** (`Copier le lien`) : fige l'état dans l'URL — le destinataire voit une
-   photo du cas, sans synchro live.
-2. **« 2ᵉ fenêtre »** : synchro temps réel entre fenêtres du **même navigateur / même machine**
-   (`BroadcastChannel`, sans serveur). Idéal pour une démo « côte à côte ».
-3. **Salon partagé** (bouton de synchro) : plusieurs **machines différentes** (salle commune)
-   voient et éditent le **même cas en direct**, via un petit serveur de salons. Les salons sont
-   éphémères (12 h), sans compte ni donnée durable. Mise en place du serveur :
-   [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
-
-## Faire tester par quelqu'un (hors-ligne / e-mail)
+## Faire tester par quelqu'un (autre ordinateur / réseau)
 
 Génère un **fichier HTML unique, autonome**, à envoyer par e-mail / Drive / WhatsApp :
 
@@ -79,10 +51,17 @@ npm run build:single
 s'ouvre dans son navigateur, sans rien installer, hors-ligne, sur n'importe quel réseau.
 Chaque destinataire a sa propre session (pas de synchro live entre machines).
 
+## Synchro multi-fenêtres (même machine)
+
+Bouton **« 2ᵉ fenêtre »** : ouvre une seconde fenêtre. Toute action cochée dans l'une se
+propage **en temps réel** à l'autre (via `BroadcastChannel`, sans serveur). Idéal pour une démo
+« côte à côte » (ex. un écran « SMUR », un écran « Régul »). Limité aux fenêtres d'un même
+navigateur sur une même machine.
+
 ## Scripts
 
 ```bash
-npm run build              # build statique (dossier dist/) — celui que déploie GitHub Pages
+npm run build              # build statique (dossier dist/) → déployable Vercel/Netlify
 npm run build:single       # → partition-urgence.html (fichier unique autonome, à envoyer)
 npm test                   # tests unitaires (moteur de règles + partage par lien)
 ```
@@ -94,19 +73,13 @@ Le contenu clinique est **séparé du code** : on fait évoluer la filière sans
 ```
 src/
   types/model.ts                       modèle (actions, règles, conditions, effets, état)
-  config/protocols/polytrauma/         ← CONTENU éditable (tracks, actions, rules, clinical…)
+  config/protocols/polytrauma/         ← CONTENU éditable (tracks, actions, rules, clinical)
   engine/                              moteur pur : evaluate(rules, état) → effets visuels
   store/                               état du cas (Zustand) + sélecteurs dérivés
   share/                               partage par lien (lz-string) + localStorage
-  sync/                                salons multi-machines (fusion LWW, polling HTTP)
-  voice/                               dictée vocale (reconnaissance + parsing français)
   components/                          UI « Songsterr » (timeline + 3 pistes + détails)
 ```
 
 Ajouter un déclencheur = ajouter un objet dans `config/protocols/polytrauma/rules.ts`.
 Ajouter une action = un objet dans `actions.ts`. Le validateur (`config/validate.ts`)
 signale en dev toute cible orpheline.
-
-## Licence
-
-[MIT](LICENSE) — © 2026 Félix Amiot & Pierre Balaz.

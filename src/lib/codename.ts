@@ -23,21 +23,9 @@ export function randomNumericCode(): string {
   return String(Math.floor(100 + Math.random() * 900))
 }
 
-/**
- * Identifiant technique court (a-z0-9) pour l'unicité d'une session/salle.
- * Tiré via crypto quand disponible : le code de salle sert de capacité d'accès
- * (quiconque le connaît lit/écrit le salon), il doit être non devinable.
- */
+/** Identifiant technique court (a-z0-9) pour l'unicité d'une session/salle. */
 export function randomId(len = 6): string {
   const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789'
-  const cryptoObj = globalThis.crypto
-  if (cryptoObj?.getRandomValues) {
-    const buf = new Uint32Array(len)
-    cryptoObj.getRandomValues(buf)
-    let s = ''
-    for (let i = 0; i < len; i++) s += alphabet[buf[i] % alphabet.length]
-    return s
-  }
   let s = ''
   for (let i = 0; i < len; i++) s += alphabet[Math.floor(Math.random() * alphabet.length)]
   return s

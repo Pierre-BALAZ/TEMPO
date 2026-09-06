@@ -20,7 +20,7 @@ export interface TrackTheme {
 
 const THEMES: Record<TrackDef['color'], TrackTheme> = {
   sky: {
-    headerBg: 'bg-sky-700',
+    headerBg: 'bg-sky-600',
     headerText: 'text-sky-50',
     laneBorder: 'border-sky-300',
     laneBg: 'bg-sky-50/40',
@@ -30,7 +30,7 @@ const THEMES: Record<TrackDef['color'], TrackTheme> = {
     chipText: 'text-sky-800',
   },
   amber: {
-    headerBg: 'bg-amber-700',
+    headerBg: 'bg-amber-600',
     headerText: 'text-amber-50',
     laneBorder: 'border-amber-300',
     laneBg: 'bg-amber-50/40',
@@ -40,7 +40,7 @@ const THEMES: Record<TrackDef['color'], TrackTheme> = {
     chipText: 'text-amber-900',
   },
   rose: {
-    headerBg: 'bg-rose-700',
+    headerBg: 'bg-rose-600',
     headerText: 'text-rose-50',
     laneBorder: 'border-rose-300',
     laneBg: 'bg-rose-50/40',

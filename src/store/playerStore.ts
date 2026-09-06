@@ -1,11 +1,6 @@
 import { create } from 'zustand'
-import type { CaseState } from '../types/model'
 import { guidedSteps } from '../config/guidedScenario'
 import { useCaseStore } from './caseStore'
-
-/** Cas réel mis de côté pendant la démo guidée, restauré à la sortie
- *  (l'état Zustand est immuable : la référence capturée reste intacte). */
-let savedBeforeDemo: CaseState | null = null
 
 export type PlayerStatus = 'idle' | 'playing' | 'paused' | 'finished'
 
@@ -41,8 +36,6 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   play: () =>
     set((s) => {
       if (s.status === 'idle' || s.status === 'finished') {
-        // On met le cas réel de côté avant de le remplacer par le cas de démo.
-        if (s.status === 'idle') savedBeforeDemo = useCaseStore.getState().caseState
         useCaseStore.getState().reset()
         return { status: 'playing', index: 0, activeActionId: null }
       }
@@ -56,15 +49,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
     set({ status: 'playing', index: 0, activeActionId: null })
   },
 
-  exit: () => {
-    // Quitter la démo restaure le cas réel : les valeurs fictives injectées
-    // par la démo ne doivent pas rester dans le cas (ni en persistance).
-    if (savedBeforeDemo) {
-      useCaseStore.getState().loadCase(savedBeforeDemo)
-      savedBeforeDemo = null
-    }
-    set({ status: 'idle', index: 0, activeActionId: null })
-  },
+  exit: () => set({ status: 'idle', index: 0, activeActionId: null }),
 
   setSpeed: (speed) => set({ speed }),
   setIndex: (index) => set({ index }),

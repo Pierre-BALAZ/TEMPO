@@ -14,7 +14,6 @@ export function decodeCase(encoded: string): CaseState | null {
     if (!json) return null
     const parsed = JSON.parse(json) as CaseState
     if (!parsed || typeof parsed !== 'object' || !parsed.values || !parsed.header) return null
-    if (typeof parsed.header.caseStartedAt !== 'number') return null
     return parsed
   } catch {
     return null
@@ -40,13 +39,4 @@ export function readCaseFromHash(): CaseState | null {
 export function writeCaseToHash(caseState: CaseState): void {
   const encoded = encodeCase(caseState)
   history.replaceState(null, '', `#${HASH_KEY}=${encoded}`)
-}
-
-/** Retire l'état encodé de l'URL (après hydratation) : un hash périmé qui
- *  traîne dans la barre d'adresse écraserait les saisies plus récentes au
- *  prochain rechargement (priorité lien > localStorage). */
-export function clearCaseHash(): void {
-  if (readCaseFromHash() !== null) {
-    history.replaceState(null, '', window.location.pathname + window.location.search)
-  }
 }

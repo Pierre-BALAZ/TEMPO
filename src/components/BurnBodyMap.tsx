@@ -44,19 +44,16 @@ export function BurnBodyMap({ actionId, editable }: Props) {
                 : 'bg-slate-100 text-slate-700'
           }`}
         >
-          {total}&nbsp;%
+          {total} %
         </span>
       </div>
 
       <svg viewBox="0 0 262 250" className="w-full select-none" role="img" aria-label="Schéma corporel de Wallace">
         {WALLACE_ZONES.map((zone) => {
           const on = isOn(zone)
-          // Hex à dessein : ces couleurs vivent dans des chaînes JS injectées au
-          // runtime — le build n'abaisse que le CSS, et un fill oklch invalide
-          // rendrait les zones NOIRES sur un navigateur ancien (poste figé).
-          const fill = on ? '#dc2626' : '#f1f5f9'
+          const fill = on ? '#ef4444' : '#f1f5f9'
           const stroke = on ? '#b91c1c' : '#94a3b8'
-          const textFill = on ? '#ffffff' : '#475569'
+          const textFill = on ? '#ffffff' : '#64748b'
           const cx =
             zone.shape.kind === 'circle' ? zone.shape.cx : zone.shape.x + zone.shape.w / 2
           const cy =
@@ -67,7 +64,7 @@ export function BurnBodyMap({ actionId, editable }: Props) {
               onClick={() => toggle(zone)}
               style={{ cursor: editable ? 'pointer' : 'default' }}
             >
-              <title>{`${zone.label} — ${zone.pct}\u00A0%`}</title>
+              <title>{`${zone.label} — ${zone.pct} %`}</title>
               {zone.shape.kind === 'circle' ? (
                 <circle
                   cx={zone.shape.cx}
@@ -76,7 +73,6 @@ export function BurnBodyMap({ actionId, editable }: Props) {
                   fill={fill}
                   stroke={stroke}
                   strokeWidth={1.5}
-                  style={{ transition: 'fill 150ms, stroke 150ms' }}
                 />
               ) : (
                 <rect
@@ -88,7 +84,6 @@ export function BurnBodyMap({ actionId, editable }: Props) {
                   fill={fill}
                   stroke={stroke}
                   strokeWidth={1.5}
-                  style={{ transition: 'fill 150ms, stroke 150ms' }}
                 />
               )}
               <text
@@ -96,7 +91,7 @@ export function BurnBodyMap({ actionId, editable }: Props) {
                 y={cy}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fontSize={10}
+                fontSize={8}
                 fontWeight={600}
                 fill={textFill}
                 pointerEvents="none"
@@ -120,7 +115,7 @@ export function BurnBodyMap({ actionId, editable }: Props) {
           <button
             type="button"
             onClick={clearAll}
-            className="relative rounded border border-slate-200 px-2.5 py-1.5 font-medium text-slate-600 transition-colors before:absolute before:-inset-y-1.5 hover:bg-slate-50"
+            className="rounded border border-slate-200 px-2 py-0.5 font-medium text-slate-600 hover:bg-slate-50"
           >
             Tout effacer
           </button>

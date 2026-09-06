@@ -2,21 +2,14 @@ import type { CaseHeader, CaseState, ValueEntry } from '../types/model'
 
 /**
  * Fusion de deux états d'un même cas, sans perdre les saisies concurrentes.
- * - `values` : fusion champ par champ, la modification la plus RÉCENTE gagne
- *   (updatedAt, avec repli completedAt pour les états sérialisés anciens).
- *   → deux équipes qui remplissent des champs différents ne s'écrasent jamais,
- *   et une décoche (tombstone `value: null`) se propage comme une écriture.
+ * - `values` : fusion champ par champ, la valeur la plus RÉCENTE (completedAt) gagne.
+ *   → deux équipes qui remplissent des champs différents ne s'écrasent jamais.
  * - `header` : on complète les champs vides depuis l'autre côté ; en cas de conflit,
  *   on garde la valeur locale (les noms/délais changent rarement).
  *
- * Limite connue (prototype) : le LWW compare des horloges locales non
- * synchronisées entre postes — un poste à l'horloge très décalée peut gagner
- * des conflits à tort (pas d'horodatage serveur).
+ * Limite connue (prototype) : décocher un champ peut réapparaître si l'autre côté
+ * l'avait encore (pas de « tombstone »). Acceptable pour l'usage visé.
  */
-function stamp(e: ValueEntry | undefined): number {
-  return e?.updatedAt ?? e?.completedAt ?? 0
-}
-
 function mergeValues(
   local: Record<string, ValueEntry>,
   remote: Record<string, ValueEntry>,
@@ -25,7 +18,7 @@ function mergeValues(
   for (const k of Object.keys(remote)) {
     const r = remote[k]
     const l = out[k]
-    if (!l || stamp(r) > stamp(l)) out[k] = r
+    if (!l || (r.completedAt ?? 0) > (l.completedAt ?? 0)) out[k] = r
   }
   return out
 }
@@ -42,18 +35,6 @@ function mergeHeader(local: CaseHeader, remote: CaseHeader): CaseHeader {
   return out as unknown as CaseHeader
 }
 
-/** Garde structurelle : un état distant malformé ne doit jamais entrer dans la fusion. */
-export function isCaseLike(c: unknown): c is CaseState {
-  if (!c || typeof c !== 'object') return false
-  const o = c as Record<string, unknown>
-  return (
-    typeof o.header === 'object' &&
-    o.header !== null &&
-    typeof o.values === 'object' &&
-    o.values !== null
-  )
-}
-
 export function mergeCases(local: CaseState, remote: CaseState): CaseState {
   return {
     protocolId: local.protocolId,
@@ -66,7 +47,7 @@ export function mergeCases(local: CaseState, remote: CaseState): CaseState {
 export function caseSignature(c: CaseState): string {
   const vals = Object.keys(c.values)
     .sort()
-    .map((k) => `${k}=${JSON.stringify(c.values[k].value)}@${c.values[k].updatedAt ?? c.values[k].completedAt}`)
+    .map((k) => `${k}=${JSON.stringify(c.values[k].value)}@${c.values[k].completedAt}`)
     .join('|')
   const head = Object.keys(c.header)
     .sort()

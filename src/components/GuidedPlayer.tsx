@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { Pause, Play, RotateCcw, Volume2, VolumeX, X } from 'lucide-react'
 import { GUIDED_BASE_MS, guidedSteps, speechRate, spokenText } from '../config/guidedScenario'
 import { cancelSpeech, isSynthesisSupported, speak } from '../voice/speech'
@@ -29,14 +29,6 @@ export function GuidedPlayer() {
   const setLayout = useUiStore((s) => s.setLayout)
   const setRecapOpen = useUiStore((s) => s.setRecapOpen)
   const setVoicePanelOpen = useUiStore((s) => s.setVoicePanelOpen)
-
-  // Vitesse et voix lues via des refs : les changer en cours d'étape ne doit
-  // PAS ré-exécuter l'étape (setValueAt + scroll + narration relue du début) —
-  // le nouveau réglage s'applique à partir de l'étape suivante.
-  const speedRef = useRef(speed)
-  speedRef.current = speed
-  const voiceOnRef = useRef(voiceOn)
-  voiceOnRef.current = voiceOn
 
   // Moteur de lecture : applique l'étape (action, bascule d'interface, synthèse),
   // met en évidence l'action, la fait défiler, LIT la narration à voix haute, puis
@@ -79,23 +71,22 @@ export function GuidedPlayer() {
     }
     const text = spokenText(step)
 
-    const spd = speedRef.current
-    if (voiceOnRef.current && ttsSupported && text) {
+    if (voiceOn && ttsSupported && text) {
       speak(
         text,
         undefined,
         () => {
           if (cancelled) return
-          doneTimer = setTimeout(advance, 300 / speedRef.current)
+          doneTimer = setTimeout(advance, 300 / speed)
         },
-        speechRate(spd),
+        speechRate(speed),
       )
       // Filet de sécurité (anti-blocage) : volontairement large, pour ne jamais
       // couper une narration réelle — il ne sert qu'en cas d'absence de fin de parole.
       const estMs = 4000 + text.length * 95
-      safetyTimer = setTimeout(advance, estMs / spd + 6000)
+      safetyTimer = setTimeout(advance, estMs / speed + 6000)
     } else {
-      doneTimer = setTimeout(advance, (step.holdMs ?? GUIDED_BASE_MS) / spd)
+      doneTimer = setTimeout(advance, (step.holdMs ?? GUIDED_BASE_MS) / speed)
     }
 
     return () => {
@@ -104,7 +95,7 @@ export function GuidedPlayer() {
       if (doneTimer) clearTimeout(doneTimer)
       if (safetyTimer) clearTimeout(safetyTimer)
     }
-  }, [status, index, setValueAt, setActive, setIndex, finish, setLayout, setRecapOpen, setVoicePanelOpen])
+  }, [status, index, speed, voiceOn, setValueAt, setActive, setIndex, finish, setLayout, setRecapOpen, setVoicePanelOpen])
 
   // Referme les panneaux quand on quitte la démo.
   useEffect(() => {
@@ -121,10 +112,10 @@ export function GuidedPlayer() {
         onClick={play}
         title={
           ttsSupported
-            ? 'Visite commentée à voix haute\u00A0: principe, déroulé, interfaces, synthèse'
-            : 'Visite guidée pas à pas\u00A0: principe, déroulé, interfaces, synthèse'
+            ? 'Visite commentée à voix haute : principe, déroulé, interfaces, synthèse'
+            : 'Visite guidée pas à pas : principe, déroulé, interfaces, synthèse'
         }
-        className="flex shrink-0 items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 py-2 pl-2.5 pr-3 text-sm font-semibold text-white shadow-sm transition-[filter,transform] duration-150 ease-out hover:brightness-110 active:scale-[0.96]"
+        className="flex shrink-0 items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:from-indigo-700 hover:to-violet-700"
       >
         <Play size={15} className="fill-white" /> Démo guidée
       </button>
@@ -144,7 +135,7 @@ export function GuidedPlayer() {
           <button
             type="button"
             onClick={restart}
-            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
           >
             <RotateCcw size={15} /> Rejouer
           </button>
@@ -152,7 +143,7 @@ export function GuidedPlayer() {
           <button
             type="button"
             onClick={playing ? pause : play}
-            className="flex w-28 items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+            className="flex w-28 items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
           >
             {playing ? <Pause size={15} /> : <Play size={15} />}
             {playing ? 'Pause' : 'Reprendre'}
@@ -163,7 +154,7 @@ export function GuidedPlayer() {
           type="button"
           onClick={restart}
           title="Recommencer depuis le début"
-          className="relative flex items-center gap-1.5 rounded-lg border border-indigo-300 bg-white p-2.5 text-sm font-medium text-indigo-700 transition-colors before:absolute before:-inset-1 hover:bg-indigo-100"
+          className="flex items-center gap-1.5 rounded-lg border border-indigo-300 bg-white px-2.5 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
         >
           <RotateCcw size={15} />
         </button>
@@ -179,7 +170,7 @@ export function GuidedPlayer() {
                 ? 'Couper la narration'
                 : 'Activer la narration'
           }
-          className={`relative flex items-center gap-1.5 rounded-lg border p-2.5 text-sm font-medium transition-colors before:absolute before:-inset-1 disabled:cursor-not-allowed ${
+          className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm font-medium ${
             voiceOn && ttsSupported
               ? 'border-indigo-300 bg-white text-indigo-700 hover:bg-indigo-100'
               : 'border-slate-200 bg-white text-slate-400'
@@ -194,7 +185,7 @@ export function GuidedPlayer() {
               key={s}
               type="button"
               onClick={() => setSpeed(s)}
-              className={`relative min-w-[2.25rem] rounded-md px-2 py-1.5 font-semibold transition-colors before:absolute before:-inset-y-1 ${
+              className={`rounded px-1.5 py-0.5 font-semibold ${
                 speed === s ? 'bg-indigo-600 text-white' : 'text-indigo-600 hover:bg-indigo-100'
               }`}
             >
@@ -203,7 +194,7 @@ export function GuidedPlayer() {
           ))}
         </div>
 
-        <span className="whitespace-nowrap text-xs font-semibold tabular-nums text-indigo-700">
+        <span className="text-xs font-semibold tabular-nums text-indigo-700">
           {finished ? `Terminé · ${stepCount}/${stepCount}` : `Étape ${shown}/${stepCount}`}
         </span>
 
@@ -211,17 +202,17 @@ export function GuidedPlayer() {
           type="button"
           onClick={exit}
           title="Quitter la démo guidée"
-          className="relative ml-auto -my-1.5 -mr-1.5 rounded-md p-2.5 text-indigo-400 transition-colors before:absolute before:-inset-1 hover:bg-indigo-100 hover:text-indigo-700"
+          className="ml-auto rounded-md p-1 text-indigo-400 hover:bg-indigo-100 hover:text-indigo-700"
         >
           <X size={18} />
         </button>
       </div>
 
       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-indigo-100">
-        <div className="h-full rounded-full bg-indigo-500 transition-[width] duration-300" style={{ width: `${pct}%` }} />
+        <div className="h-full rounded-full bg-indigo-500 transition-all duration-300" style={{ width: `${pct}%` }} />
       </div>
 
-      <p className="mt-2 max-w-prose text-pretty text-sm leading-normal text-indigo-900">
+      <p className="mt-2 text-sm leading-snug text-indigo-900">
         {finished ? 'Démonstration terminée — de l’appel jusqu’au bloc, tous les acteurs sur une même partition.' : current.narration}
       </p>
     </div>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useCaseStore } from '../store/caseStore'
-import { caseSignature, isCaseLike, mergeCases } from './merge'
+import { caseSignature, mergeCases } from './merge'
 import { fetchRoom, pushRoom } from './roomSync'
 
 export type SyncStatus = 'off' | 'connecting' | 'live' | 'error'
@@ -24,20 +24,17 @@ export function useRoomSync(enabled: boolean, serverUrl: string, roomCode: strin
 
     const tick = async () => {
       try {
-        const remote = await fetchRoom(serverUrl, roomCode, ac.signal)
-        // L'état local est relu APRÈS l'await : les saisies faites pendant la
-        // latence réseau ne sont jamais écrasées par un merge sur instantané périmé.
         const local = useCaseStore.getState().caseState
+        const remote = await fetchRoom(serverUrl, roomCode, ac.signal)
         let merged = local
-        const remoteOk = isCaseLike(remote.case)
-        if (remoteOk) {
-          merged = mergeCases(local, remote.case as NonNullable<typeof remote.case>)
+        if (remote.case) {
+          merged = mergeCases(local, remote.case)
           if (caseSignature(merged) !== caseSignature(local)) {
             useCaseStore.getState().loadCase(merged)
           }
         }
-        // Pousser si le serveur est vide, malformé, ou en retard sur nous.
-        if (!remoteOk || caseSignature(remote.case as NonNullable<typeof remote.case>) !== caseSignature(merged)) {
+        // Pousser si le serveur est vide ou en retard sur nous.
+        if (!remote.case || caseSignature(remote.case) !== caseSignature(merged)) {
           await pushRoom(serverUrl, roomCode, merged, ac.signal)
         }
         if (!stopRef.current) {

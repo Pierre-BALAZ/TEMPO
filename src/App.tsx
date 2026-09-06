@@ -20,7 +20,6 @@ import { Stopwatch } from './components/Stopwatch'
 import { useCaseStore } from './store/caseStore'
 import { useUiStore } from './store/uiStore'
 import { saveCase } from './share/persistence'
-import { clearCaseHash } from './share/urlState'
 import { useBroadcastSync } from './hooks/useBroadcastSync'
 
 export default function App() {
@@ -37,30 +36,23 @@ export default function App() {
     saveCase(caseState)
   }, [caseState])
 
-  // Une fois hydraté, on retire l'état encodé de l'URL : un hash périmé qui
-  // resterait dans la barre d'adresse écraserait les saisies suivantes au
-  // prochain rechargement.
-  useEffect(() => {
-    clearCaseHash()
-  }, [])
-
   return (
     <div className="mx-auto flex min-h-full max-w-[1500px] flex-col gap-4 p-3 sm:p-5">
       <header className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <Logo size={34} className="shrink-0" />
-          <h1 className="text-balance text-xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl">
-            TEMPO <span className="font-semibold text-slate-500">— partition d’urgence</span>
+          <h1 className="text-xl font-extrabold text-slate-900 sm:text-2xl">
+            Partition d’urgence — Traumatisé sévère
           </h1>
         </div>
-        <p className="max-w-prose text-pretty text-sm text-slate-500">
+        <p className="text-sm text-slate-500">
           Régulation · Pré-hospitalier · Intra-hospitalier sur une timeline commune. Une action
           renseignée par une équipe en débloque / alerte d’autres.
         </p>
-        <p className="max-w-prose text-pretty text-xs text-slate-500">
+        <p className="text-xs text-slate-500">
           Réalisé par le <strong className="font-semibold text-slate-700">Dr Félix AMIOT</strong> (SMUR / Urgences / SAMU 50 —
           CH Saint-Lô) et le <strong className="font-semibold text-slate-700">Dr Pierre BALAZ</strong> (BMPM).
-          Projet open source — licence MIT.
+          © Tous droits réservés — les auteurs en détiennent la propriété intellectuelle.
         </p>
       </header>
 
@@ -79,14 +71,14 @@ export default function App() {
           <button
             type="button"
             onClick={() => setAllCollapsed(!allCollapsed)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
           >
             {allCollapsed ? <Maximize2 size={15} /> : <Minimize2 size={15} />}
             {allCollapsed ? 'Tout développer' : 'Tout réduire'}
           </button>
           {syncSupported && (
             <span
-              className="flex items-center gap-1 whitespace-nowrap rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-medium text-emerald-700"
+              className="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-medium text-emerald-700"
               title="Les fenêtres ouvertes sur cette machine se synchronisent en temps réel."
             >
               <RadioTower size={12} /> Synchro multi-fenêtres
@@ -111,11 +103,11 @@ export default function App() {
 
       <Legend />
 
-      <footer className="mx-auto max-w-prose text-pretty pb-6 text-center text-[11px] text-slate-500">
-        TEMPO — partition d’urgence · sources&nbsp;: Vittel, RESUVAL, score ABC, BATT, CRASH-2,
+      <footer className="pb-6 text-center text-[11px] text-slate-400">
+        Prototype « partition d’urgence » · sources : Vittel, RESUVAL, score ABC, BATT, CRASH-2,
         Wallace.
         <br />
-        © 2026 Dr Félix AMIOT (SMUR / Urgences / SAMU 50 — CH Saint-Lô) &amp; Dr Pierre BALAZ (BMPM) — open source (licence MIT).
+        © Dr Félix AMIOT (SMUR / Urgences / SAMU 50 — CH Saint-Lô) &amp; Dr Pierre BALAZ (BMPM) — propriété intellectuelle réservée.
       </footer>
 
       <ActionDetailPanel />
@@ -135,9 +127,9 @@ function Legend() {
   ]
   return (
     <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500">
-      <span className="font-semibold uppercase tracking-wide text-slate-500">Légende</span>
+      <span className="font-semibold uppercase tracking-wide text-slate-400">Légende</span>
       {items.map((it) => (
-        <span key={it.label} className="flex items-center gap-1.5 whitespace-nowrap">
+        <span key={it.label} className="flex items-center gap-1.5">
           <span className={`inline-block h-3.5 w-5 rounded border ${it.cls}`} />
           {it.label}
         </span>

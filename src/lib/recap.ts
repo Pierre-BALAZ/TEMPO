@@ -1,5 +1,4 @@
 import type { ActionDef, ActionValue, CaseState, Protocol, SubField } from '../types/model'
-import { displayValue } from '../engine/computed'
 import { parseLog } from './evolutionLog'
 import { formatClock } from './timeline'
 
@@ -11,15 +10,14 @@ export interface RecapItem {
   valueText: string
 }
 
-function valueText(def: ActionDef, rawValue: ActionValue): string {
-  const value = displayValue(rawValue)
+function valueText(def: ActionDef, value: ActionValue): string {
   if (def.type === 'checkbox') return value === true ? 'fait' : ''
   if (value === null || value === undefined || value === '') return ''
   if (def.type === 'select') {
     const opt = def.options?.find((o) => o.value === value)
     return opt ? opt.label : String(value)
   }
-  if (def.type === 'number') return def.unit ? `${value}\u00A0${def.unit}` : String(value)
+  if (def.type === 'number') return def.unit ? `${value} ${def.unit}` : String(value)
   return String(value)
 }
 
@@ -30,7 +28,7 @@ function subValueText(sf: SubField, value: ActionValue): string {
     const opt = sf.options?.find((o) => o.value === value)
     return opt ? opt.label : String(value)
   }
-  if (sf.type === 'number') return sf.unit ? `${value}\u00A0${sf.unit}` : String(value)
+  if (sf.type === 'number') return sf.unit ? `${value} ${sf.unit}` : String(value)
   return String(value)
 }
 
@@ -130,9 +128,9 @@ export function recapPrintHtml(items: RecapItem[], caseState: CaseState): string
     ? new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(h.caseStartedAt)
     : ''
   const intervenants = [
-    h.regulateurName ? `Régulateur\u00A0: ${h.regulateurName}` : '',
-    h.smurName ? `SMUR\u00A0: ${h.smurName}` : '',
-    h.serviceReceveur ? `Service\u00A0: ${h.serviceReceveur}` : '',
+    h.regulateurName ? `Régulateur : ${h.regulateurName}` : '',
+    h.smurName ? `SMUR : ${h.smurName}` : '',
+    h.serviceReceveur ? `Service : ${h.serviceReceveur}` : '',
   ]
     .filter(Boolean)
     .join(' · ')
@@ -153,22 +151,20 @@ export function recapPrintHtml(items: RecapItem[], caseState: CaseState): string
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Récap TEMPO — ${esc(
     patient,
   )}</title><style>
-    /* Hex à dessein : CSS embarqué dans une chaîne JS (document.write), jamais
-       abaissé par le build — un poste ancien perdrait toutes les couleurs. */
     *{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;box-sizing:border-box}
-    body{margin:24px;color:#0f172a;line-height:1.5}
+    body{margin:24px;color:#0f172a}
     h1{font-size:18px;margin:0 0 2px}
     .sub{color:#64748b;font-size:12px;margin-bottom:12px}
     table{border-collapse:collapse;width:100%;font-size:12px}
-    th,td{border-bottom:1px solid #e2e8f0;padding:6px 8px;text-align:start;vertical-align:top}
+    th,td{border-bottom:1px solid #e2e8f0;padding:6px 8px;text-align:left;vertical-align:top}
     th{background:#f1f5f9;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#475569}
     td.t{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
     td.v{font-weight:600}
-    .foot{margin-top:14px;font-size:10px;color:#475569}
+    .foot{margin-top:14px;font-size:10px;color:#94a3b8}
     @media print{body{margin:12mm}}
   </style></head><body>
-  <h1>TEMPO — partition d’urgence · récap chronologique</h1>
-  <div class="sub">Patient (anonyme)&nbsp;: <b>${esc(patient)}</b>${date ? ' · ' + esc(date) : ''}${
+  <h1>TEMPO — Partition d'urgence · récap chronologique</h1>
+  <div class="sub">Patient (anonyme) : <b>${esc(patient)}</b>${date ? ' · ' + esc(date) : ''}${
     intervenants ? ' · ' + esc(intervenants) : ''
   }</div>
   ${table}

@@ -1,12 +1,10 @@
 import type { Role } from '../store/uiStore'
 import { useUiStore } from '../store/uiStore'
 
-// Mêmes teintes que les en-têtes de piste (theme.ts, `-700` pour le contraste AA) :
-// le chip actif doit rester le miroir exact de « sa » piste.
 const ROLES: { id: Role; label: string; active: string }[] = [
-  { id: 'regul', label: 'Régulateur', active: 'bg-sky-700 text-white' },
-  { id: 'prehosp', label: 'SMUR / VSAV', active: 'bg-amber-700 text-white' },
-  { id: 'intra', label: 'Intra-hosp', active: 'bg-rose-700 text-white' },
+  { id: 'regul', label: 'Régulateur', active: 'bg-sky-600 text-white' },
+  { id: 'prehosp', label: 'SMUR / VSAV', active: 'bg-amber-600 text-white' },
+  { id: 'intra', label: 'Intra-hosp', active: 'bg-rose-600 text-white' },
   { id: 'observer', label: 'Observateur', active: 'bg-slate-800 text-white' },
 ]
 
@@ -16,8 +14,8 @@ export function RoleSwitcher() {
   const setActiveRole = useUiStore((s) => s.setActiveRole)
 
   return (
-    <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-0.5 text-sm">
-      <span className="px-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+    <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1 text-sm">
+      <span className="px-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
         Je suis
       </span>
       {ROLES.map((r) => (
@@ -25,7 +23,7 @@ export function RoleSwitcher() {
           key={r.id}
           type="button"
           onClick={() => setActiveRole(r.id)}
-          className={`relative rounded-md px-2.5 py-1.5 font-medium transition-colors before:absolute before:-inset-y-1.5 ${
+          className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
             activeRole === r.id ? r.active : 'text-slate-600 hover:bg-slate-100'
           }`}
         >

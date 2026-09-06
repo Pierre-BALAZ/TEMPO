@@ -23,12 +23,12 @@ export function TimelineRuler({ totalMinutes }: Props) {
           type="button"
           onClick={toggleCompact}
           title={compact ? 'Élargir la colonne (étiquettes)' : 'Réduire la colonne (icônes)'}
-          className="relative rounded-md p-1.5 text-slate-500 transition-colors before:absolute before:-inset-2 hover:bg-slate-200"
+          className="rounded p-1 text-slate-500 hover:bg-slate-200"
         >
           {compact ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
         </button>
         {!compact && (
-          <span className="ms-auto pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+          <span className="ml-auto pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
             Temps (min)
           </span>
         )}
@@ -36,7 +36,7 @@ export function TimelineRuler({ totalMinutes }: Props) {
       <div className="relative h-8 grow" style={{ minWidth: contentWidth(totalMinutes) }}>
         {ticks.map((m) => (
           <div key={m} className="absolute bottom-0 flex flex-col items-center" style={{ left: xOfMinute(m) }}>
-            <span className="text-[10px] tabular-nums text-slate-500">{m}</span>
+            <span className="text-[10px] tabular-nums text-slate-400">{m}</span>
             <span className="h-2 w-px bg-slate-300" />
           </div>
         ))}

@@ -15,7 +15,7 @@ function IntervenantTab({ icon, label, field, placeholder, accent }: FieldProps)
   const value = useCaseStore((s) => s.caseState.header[field])
   const setHeader = useCaseStore((s) => s.setHeader)
   return (
-    <label className={`flex min-w-[170px] flex-1 flex-col gap-1 rounded-lg border px-3 py-2 focus-within:ring-2 focus-within:ring-slate-400/50 ${accent}`}>
+    <label className={`flex min-w-[170px] flex-1 flex-col gap-1 rounded-lg border px-3 py-2 ${accent}`}>
       <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide opacity-80">
         {icon} {label}
       </span>
@@ -24,7 +24,7 @@ function IntervenantTab({ icon, label, field, placeholder, accent }: FieldProps)
         value={(value as string) ?? ''}
         placeholder={placeholder}
         onChange={(e) => setHeader({ [field]: e.target.value || undefined })}
-        className="bg-transparent text-base font-semibold text-slate-800 placeholder:font-normal placeholder:text-slate-500 focus:outline-none sm:text-sm"
+        className="bg-transparent text-sm font-semibold text-slate-800 placeholder:font-normal placeholder:text-slate-400 focus:outline-none"
       />
     </label>
   )
@@ -34,7 +34,7 @@ function PatientTab() {
   const codename = useCaseStore((s) => s.caseState.header.patientCodename)
   const setHeader = useCaseStore((s) => s.setHeader)
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-indigo-900 focus-within:ring-2 focus-within:ring-indigo-300">
+    <div className="flex items-center gap-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-indigo-900">
       <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold uppercase tracking-wide opacity-80">
         <Music2 size={13} /> Patient (anonyme)
       </span>
@@ -43,13 +43,13 @@ function PatientTab() {
         value={codename ?? ''}
         placeholder="Nom de code (ex. Chopin, 314…)"
         onChange={(e) => setHeader({ patientCodename: e.target.value || undefined })}
-        className="min-w-0 flex-1 bg-transparent text-base font-bold text-indigo-900 placeholder:text-sm placeholder:font-normal placeholder:text-indigo-600 focus:outline-none"
+        className="min-w-0 flex-1 bg-transparent text-base font-bold text-indigo-900 placeholder:text-sm placeholder:font-normal placeholder:text-indigo-400 focus:outline-none"
       />
       <button
         type="button"
         onClick={() => setHeader({ patientCodename: randomComposer(codename) })}
         title="Tirer un autre nom de compositeur"
-        className="relative flex shrink-0 items-center gap-1 rounded-md border border-indigo-200 bg-white/70 px-2 py-1.5 text-xs font-medium text-indigo-700 transition-colors before:absolute before:-inset-x-1 before:-inset-y-2 hover:bg-white"
+        className="flex shrink-0 items-center gap-1 rounded-md border border-indigo-200 bg-white/70 px-2 py-1 text-xs font-medium text-indigo-700 hover:bg-white"
       >
         <Shuffle size={13} /> Autre
       </button>

@@ -51,19 +51,19 @@ export const guidedSteps: GuidedStep[] = [
   // ─── Chapitres d'introduction ───────────────────────────────────────────
   {
     narration:
-      'Le principe de TEMPO\u00A0: représenter la prise en charge du traumatisé sévère comme une partition musicale, sur trois pistes qui partagent une même ligne de temps.',
+      'Le principe de TEMPO : représenter la prise en charge du traumatisé sévère comme une partition musicale, sur trois pistes qui partagent une même ligne de temps.',
     say: "Bienvenue dans TEMPO. Le principe est simple : représenter la prise en charge d'un traumatisé sévère comme une partition musicale. Trois pistes — la régulation au SAMU Centre 15, le pré-hospitalier avec le Smur, et l'intra-hospitalier au déchocage — se déroulent sur une même ligne de temps partagée. Chaque geste coché sur une piste peut éclairer, ou débloquer, une action sur les autres.",
     holdMs: 8000,
   },
   {
     narration:
-      'Chaque cas ouvre une salle de connexion partagée, identifiée par un nom de code de compositeur (Mozart, Debussy…)\u00A0: le patient reste anonyme, et deux dossiers ne peuvent pas être confondus.',
+      'Chaque cas ouvre une salle de connexion partagée, identifiée par un nom de code de compositeur (Mozart, Debussy…) : le patient reste anonyme, et deux dossiers ne peuvent pas être confondus.',
     say: "Chaque prise en charge ouvre une salle de connexion partagée entre les intervenants. Pour préserver l'anonymat du patient, cette salle n'utilise jamais son identité : elle est désignée par un nom de code de compositeur, par exemple Mozart, ou Debussy. Ainsi, tous les acteurs travaillent sur le même dossier, en temps réel, sans jamais exposer de donnée nominative, et sans risquer de confondre deux patients.",
     holdMs: 8000,
   },
   {
     narration:
-      "L’objectif\u00A0: une meilleure coordination entre tous les acteurs, et une prise en compte du temps réellement écoulé depuis le début de la prise en charge.",
+      "L'objectif : une meilleure coordination entre tous les acteurs, et une prise en compte du temps réellement écoulé depuis le début de la prise en charge.",
     say: "L'enjeu de TEMPO est double. D'abord, améliorer la coordination entre tous les acteurs de la prise en charge du traumatisé sévère : le régulateur, l'équipe Smur et l'équipe hospitalière voient la même partition, et savent à chaque instant ce que font les autres. Ensuite, mieux prendre en compte le temps réellement écoulé : chaque action est horodatée sur la ligne de temps, ce qui rend les délais visibles et aide à respecter les fenêtres critiques, comme celle de l'acide tranexamique.",
     holdMs: 9000,
   },
@@ -74,7 +74,7 @@ export const guidedSteps: GuidedStep[] = [
     value: true,
     offsetMin: 0,
     narration:
-      'Régulation — critère de Vittel (cinétique\u00A0: éjection du véhicule)\u00A0: traumatisé sévère suspecté.',
+      'Régulation — critère de Vittel (cinétique : éjection du véhicule) : traumatisé sévère suspecté.',
     say: "La régulation reçoit l'appel. Un critère de Vittel est présent : éjection du véhicule. On suspecte d'emblée un traumatisé sévère.",
   },
   {
@@ -102,21 +102,21 @@ export const guidedSteps: GuidedStep[] = [
     actionId: 'prehosp.a.lvas',
     value: true,
     offsetMin: 5,
-    narration: 'SMUR sur les lieux — A\u00A0: libération des voies aériennes + immobilisation cervicale.',
+    narration: 'SMUR sur les lieux — A : libération des voies aériennes + immobilisation cervicale.',
     say: "Le Smur est sur les lieux. Étape A : libération des voies aériennes, et immobilisation du rachis cervical.",
   },
   {
     actionId: 'prehosp.c.pas',
     value: 82,
     offsetMin: 6,
-    narration: 'SMUR — C\u00A0: pression artérielle basse (PAS 82 mmHg).',
+    narration: 'SMUR — C : pression artérielle basse (PAS 82 mmHg).',
     say: "Étape C, la circulation : la pression artérielle systolique est basse, à 82 millimètres de mercure.",
   },
   {
     actionId: 'prehosp.c.fc',
     value: 128,
     offsetMin: 6,
-    narration: 'SMUR — C\u00A0: tachycardie (FC 128/min).',
+    narration: 'SMUR — C : tachycardie (FC 128/min).',
     say: 'Toujours en C : le patient est tachycarde, avec une fréquence cardiaque à 128 par minute.',
   },
   {
@@ -145,7 +145,7 @@ export const guidedSteps: GuidedStep[] = [
     actionId: 'prehosp.scores.abc::penetrant',
     value: true,
     offsetMin: 8,
-    narration: 'SMUR — item ABC\u00A0: mécanisme pénétrant.',
+    narration: 'SMUR — item ABC : mécanisme pénétrant.',
     say: 'On complète le score ABC. Premier item : mécanisme pénétrant.',
   },
   {
@@ -164,7 +164,7 @@ export const guidedSteps: GuidedStep[] = [
     value: true,
     offsetMin: 9,
     narration:
-      'SMUR — OctaplasLG (plasma SD)\u00A0: plasma prêt à l’emploi, en cas de haut risque hémorragique (mis en rouge si BATT ≥ 8).',
+      'SMUR — OctaplasLG (plasma SD) : plasma prêt à l’emploi, en cas de haut risque hémorragique (mis en rouge si BATT ≥ 8).',
     say: "Autre traitement possible dès le préhospitalier, en cas de haut risque hémorragique : le plasma OctaplasLG, prêt à l'emploi. Il est mis en avant en rouge lorsque le score BATT atteint 8.",
   },
   {
@@ -230,7 +230,7 @@ export const guidedSteps: GuidedStep[] = [
   {
     voicePanel: true,
     narration:
-      'Sur le terrain, les mains sont prises\u00A0: le SMUR peut tout saisir à la voix. Le panneau « Dictée vocale » (en bas à gauche) écoute des commandes simples.',
+      'Sur le terrain, les mains sont prises : le SMUR peut tout saisir à la voix. Le panneau « Dictée vocale » (en bas à gauche) écoute des commandes simples.',
     say: "Sur le terrain, les mains du médecin Smur sont souvent prises. TEMPO propose donc une dictée vocale, ici en bas à gauche de l'écran. En disant par exemple : tension 86, fréquence cardiaque 110, FAST positif, instable, grade A, toutes les valeurs se cochent d'elles-mêmes. D'autres commandes existent : « dictée » pour démarrer, « synthèse » pour relire à voix haute ce qui a été saisi, « validé » pour confirmer, « correction » pour modifier, « conseils » pour énoncer les actions à mener et les constantes manquantes, et « terminé » pour arrêter. La dictée fonctionne sur Chrome ou Edge, avec l'accès au microphone.",
     holdMs: 12000,
   },
@@ -240,14 +240,14 @@ export const guidedSteps: GuidedStep[] = [
     layout: 'pupitre',
     voicePanel: false,
     narration:
-      'Deux interfaces pour un même contenu. Voici la vue « Pupitre »\u00A0: des colonnes de cartes empilées, idéale sur téléphone.',
+      'Deux interfaces pour un même contenu. Voici la vue « Pupitre » : des colonnes de cartes empilées, idéale sur téléphone.',
     say: "TEMPO propose deux interfaces pour le même contenu. Voici la première : la vue Pupitre. Chaque piste devient une colonne de cartes empilées, qui se replient en une seule colonne sur un téléphone. C'est la vue la plus lisible au doigt, sur le terrain.",
     holdMs: 7000,
   },
   {
     layout: 'portee',
     narration:
-      '…et voici la vue « Portée »\u00A0: la frise chronologique horizontale, idéale sur grand écran. Un simple bouton bascule de l’une à l’autre.',
+      '…et voici la vue « Portée » : la frise chronologique horizontale, idéale sur grand écran. Un simple bouton bascule de l’une à l’autre.',
     say: "Et voici la seconde : la vue Portée, la frise chronologique horizontale, idéale sur grand écran pour saisir tout le déroulé d'un coup d'œil. Un simple bouton, en haut du plateau, permet de basculer de l'une à l'autre — et l'application choisit automatiquement la mieux adaptée à votre écran.",
     holdMs: 7000,
   },
@@ -256,7 +256,7 @@ export const guidedSteps: GuidedStep[] = [
   {
     recap: true,
     narration:
-      'Enfin, la synthèse chronologique imprimable\u00A0: toutes les actions horodatées, dans l’ordre du temps.',
+      'Enfin, la synthèse chronologique imprimable : toutes les actions horodatées, dans l’ordre du temps.',
     say: "Dernier point : la synthèse chronologique. En un clic, TEMPO reconstitue toute la prise en charge — chaque action horodatée, dans l'ordre du temps, avec la piste concernée et la valeur saisie. Cette synthèse est imprimable, ou exportable en PDF depuis le navigateur. Elle est précieuse pour la traçabilité, la transmission, et le débriefing de l'équipe.",
     holdMs: 9000,
   },

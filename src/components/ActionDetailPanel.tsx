@@ -3,12 +3,13 @@ import type { ActionValue, SubField } from '../types/model'
 import { protocolIndex } from '../config'
 import { useCaseStore } from '../store/caseStore'
 import { canEditTrack, useUiStore } from '../store/uiStore'
-import { useEscapeToClose } from '../hooks/useEscapeToClose'
 import { formatClock } from '../lib/timeline'
 import { BurnBodyMap } from './BurnBodyMap'
+import { FastBodyMap } from './FastBodyMap'
 import { DerivedCriteria } from './DerivedCriteria'
 import { EvolutionLog } from './EvolutionLog'
 import { Gauge } from './Gauge'
+import { TimestampedValueHistory } from './TimestampedValueHistory'
 
 export function ActionDetailPanel() {
   const openActionId = useUiStore((s) => s.openActionId)
@@ -20,10 +21,6 @@ export function ActionDetailPanel() {
   const editable = useUiStore((s) =>
     action ? canEditTrack(s.activeRole, s.roleChosen, action.trackId) : false,
   )
-
-  // Fermeture au clavier (Échap), comme le clic sur l'overlay.
-  useEscapeToClose(Boolean(openActionId), closeAction)
-
   if (!action) return null
 
   const track = protocolIndex.trackMap.get(action.trackId)
@@ -40,19 +37,19 @@ export function ActionDetailPanel() {
 
   return (
     <>
-      <div className="enter-overlay fixed inset-0 z-30 bg-slate-900/30" onClick={closeAction} />
-      <aside className="enter-side-panel fixed right-0 top-0 z-40 flex h-full w-full max-w-md flex-col gap-4 overflow-y-auto bg-white p-5 shadow-2xl">
+      <div className="fixed inset-0 z-30 bg-slate-900/30" onClick={closeAction} />
+      <aside className="fixed right-0 top-0 z-40 flex h-full w-full max-w-md flex-col gap-4 overflow-y-auto bg-white p-5 shadow-2xl">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
               {track?.shortLabel} · {section?.label}
             </p>
-            <h2 className="text-balance text-lg font-bold leading-snug text-slate-900">{action.label}</h2>
+            <h2 className="text-lg font-bold text-slate-900">{action.label}</h2>
           </div>
           <button
             type="button"
             onClick={closeAction}
-            className="-m-2 rounded-md p-3 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
             aria-label="Fermer"
           >
             <X size={20} />
@@ -60,7 +57,7 @@ export function ActionDetailPanel() {
         </div>
 
         {action.detail?.reminder && (
-          <div className="whitespace-pre-line text-pretty rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
+          <div className="whitespace-pre-line rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
             {action.detail.reminder}
           </div>
         )}
@@ -69,11 +66,44 @@ export function ActionDetailPanel() {
           <BurnBodyMap actionId={action.id} editable={editable} />
         )}
 
+        {action.id === 'prehosp.c.fast' && (
+          <FastBodyMap
+            zones={{
+              pericarde: values[`${action.id}::pericarde`] as string | null,
+              hemo_droit: values[`${action.id}::hemo_droit`] as string | null,
+              hemo_gauche: values[`${action.id}::hemo_gauche`] as string | null,
+              bassin: values[`${action.id}::bassin`] as string | null,
+              pnx_droit: values[`${action.id}::pnx_droit`] as string | null,
+              pnx_gauche: values[`${action.id}::pnx_gauche`] as string | null,
+            }}
+            onZoneChange={(zoneId, value) => {
+              if (editable) {
+                setValue(`${action.id}::${zoneId}`, value)
+              }
+            }}
+          />
+        )}
+
         {action.detail?.widget === 'evolutionLog' && (
           <EvolutionLog actionId={action.id} editable={editable} />
         )}
 
         {action.type === 'computed' && <DerivedCriteria action={action} />}
+
+        {action.type === 'number' && action.timestamped && (
+          <TimestampedValueHistory
+            actionId={action.id}
+            subFieldId=""
+            label={action.label}
+            unit={action.unit}
+            currentValue={typeof values[action.id]?.value === 'string' ? (values[action.id].value as string) : null}
+            onAddValue={(val, ts) => {
+              const existing = typeof values[action.id]?.value === 'string' ? `${values[action.id].value}|` : ''
+              setValue(action.id, `${existing}${ts}:${val}`)
+            }}
+            editable={editable}
+          />
+        )}
 
         {groups.length > 0 && (
           <div className="flex flex-col gap-4">
@@ -89,6 +119,7 @@ export function ActionDetailPanel() {
                   return (
                     <SubFieldInput
                       key={sf.id}
+                      actionId={action.id}
                       subField={sf}
                       value={values[key]?.value ?? null}
                       onChange={(v) => setValue(key, v)}
@@ -113,8 +144,8 @@ export function ActionDetailPanel() {
           </div>
         )}
 
-        <p className="mt-auto text-pretty text-[11px] text-slate-500">
-          Astuce&nbsp;: l’action se renseigne aussi directement sur sa carte dans la timeline.
+        <p className="mt-auto text-[11px] text-slate-400">
+          Astuce : l’action se renseigne aussi directement sur sa carte dans la timeline.
         </p>
       </aside>
     </>
@@ -122,10 +153,12 @@ export function ActionDetailPanel() {
 }
 
 function SubFieldInput({
+  actionId,
   subField,
   value,
   onChange,
 }: {
+  actionId: string
   subField: SubField
   value: ActionValue
   onChange: (v: ActionValue) => void
@@ -136,7 +169,7 @@ function SubFieldInput({
       <button
         type="button"
         onClick={() => onChange(!checked)}
-        className="flex items-start gap-2 rounded-md border border-slate-200 px-2.5 py-2 text-start text-sm transition-colors hover:bg-slate-50"
+        className="flex items-start gap-2 rounded-md border border-slate-200 px-2.5 py-2 text-left text-sm hover:bg-slate-50"
       >
         <span
           className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border ${
@@ -150,6 +183,24 @@ function SubFieldInput({
     )
   }
 
+  if (subField.timestamped && subField.type === 'number') {
+    const currentRaw = typeof value === 'string' ? value : null
+    return (
+      <TimestampedValueHistory
+        actionId={actionId}
+        subFieldId={subField.id}
+        label={subField.label}
+        unit={subField.unit}
+        currentValue={currentRaw}
+        onAddValue={(val, ts) => {
+          const existing = currentRaw ? `${currentRaw}|` : ''
+          onChange(`${existing}${ts}:${val}`)
+        }}
+        editable={true}
+      />
+    )
+  }
+
   if (subField.type === 'timestamp') {
     const recorded = typeof value === 'string' && value !== '' ? value : null
     return (
@@ -157,21 +208,21 @@ function SubFieldInput({
         <button
           type="button"
           onClick={() => onChange(recorded ? null : formatClock(Date.now()))}
-          className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-sm font-medium tabular-nums transition-colors ${
+          className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-sm font-medium ${
             recorded
               ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
               : 'border-slate-300 text-slate-700 hover:bg-slate-50'
           }`}
         >
           <Clock size={14} />
-          {recorded ? `${subField.label} : ${recorded}` : `${subField.label} — noter l’heure`}
+          {recorded ? `${subField.label} : ${recorded}` : `${subField.label} — noter l’heure`}
         </button>
         {recorded && (
           <button
             type="button"
             onClick={() => onChange(null)}
             aria-label="Effacer"
-            className="relative -m-1.5 rounded-md p-2.5 text-slate-400 transition-colors before:absolute before:-inset-y-1 hover:bg-slate-100"
+            className="rounded p-1 text-slate-400 hover:bg-slate-100"
           >
             <X size={14} />
           </button>
@@ -201,7 +252,7 @@ function SubFieldInput({
         <select
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => onChange(e.target.value || null)}
-          className="rounded border border-slate-300 px-2 py-1 text-base focus:border-slate-500 focus:outline-none sm:text-sm"
+          className="rounded border border-slate-300 px-2 py-1 focus:border-slate-500 focus:outline-none"
         >
           <option value="">—</option>
           {subField.options?.map((o) => (
@@ -224,7 +275,7 @@ function SubFieldInput({
                   : e.target.value,
             )
           }
-          className="rounded border border-slate-300 px-2 py-1 text-base focus:border-slate-500 focus:outline-none sm:text-sm"
+          className="rounded border border-slate-300 px-2 py-1 focus:border-slate-500 focus:outline-none"
         />
       )}
     </label>

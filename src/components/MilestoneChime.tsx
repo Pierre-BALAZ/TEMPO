@@ -1,7 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { activeProtocol } from '../config'
-import { useNow } from '../hooks/useNow'
-import { createChimeTracker, milestonesToChime } from '../lib/milestones'
 import { useCaseStore } from '../store/caseStore'
 
 /** Bip d'une seconde. */
@@ -33,24 +30,32 @@ function playBeep() {
 }
 
 /**
- * Bip d'1 s au franchissement des jalons sonores du protocole (`chime: true`).
+ * Bip d'1 s au franchissement de 60 min (Golden hour).
  * Le témoin visuel est affiché dans le cadre du chrono (voir Stopwatch).
- * Un cas rouvert déjà au-delà d'un jalon ne sonne pas (voir lib/milestones).
  */
 export function MilestoneChime() {
   const startedAt = useCaseStore((s) => s.caseState.header.caseStartedAt)
-  const now = useNow(true)
-  const trackerRef = useRef(createChimeTracker())
+  const armedRef = useRef(false)
+  const beepedRef = useRef<number | null>(null)
 
   useEffect(() => {
-    trackerRef.current = createChimeTracker()
+    armedRef.current = false
+    beepedRef.current = null
+
+    const tick = () => {
+      const elapsedMin = (Date.now() - startedAt) / 60000
+      if (elapsedMin < 60) {
+        armedRef.current = true
+      } else if (armedRef.current && beepedRef.current !== startedAt) {
+        beepedRef.current = startedAt
+        playBeep()
+      }
+    }
+
+    tick()
+    const id = window.setInterval(tick, 1000)
+    return () => window.clearInterval(id)
   }, [startedAt])
-
-  useEffect(() => {
-    const elapsedMin = (now - startedAt) / 60_000
-    const due = milestonesToChime(activeProtocol.milestones ?? [], elapsedMin, trackerRef.current)
-    if (due.length > 0) playBeep()
-  }, [now, startedAt])
 
   return null
 }

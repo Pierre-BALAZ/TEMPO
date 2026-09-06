@@ -39,10 +39,7 @@ export function computeValue(
   if (spec.method === 'ratio') {
     const den = nums[1]
     if (!den) return 0
-    // Valeur EXACTE : l'arrondi se fait à l'affichage seulement (displayValue).
-    // Arrondir ici ferait franchir les seuils des règles par arrondi
-    // (ex. 68/62 = 1,0968 arrondi 1,10 → « ≥ 1,1 » déclenché à tort).
-    return nums[0] / den
+    return Math.round((nums[0] / den) * 100) / 100
   }
   // 'sum' : input chaîne → valeur × poids ; critère → points déjà calculés.
   return spec.inputs.reduce((acc, inp, i) => {
@@ -135,11 +132,6 @@ function criterionValue(
       break
   }
   return ok ? pts : 0
-}
-
-/** Arrondi d'AFFICHAGE (2 décimales) — ne jamais l'utiliser pour comparer à un seuil. */
-export function displayValue(v: ActionValue): ActionValue {
-  return typeof v === 'number' ? Math.round(v * 100) / 100 : v
 }
 
 /** Résout la valeur d'une action : calcule les `computed`, lit les autres dans l'état. */

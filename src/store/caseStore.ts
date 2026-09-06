@@ -30,14 +30,11 @@ export const useCaseStore = create<CaseStore>((set) => ({
   setValue: (actionId, value) =>
     set((state) => {
       const values = { ...state.caseState.values }
-      const now = Date.now()
       if (isFilledValue(value)) {
         const existing = values[actionId]
-        // completedAt = premier remplissage (position timeline) ; updatedAt = LWW synchro.
-        values[actionId] = { value, completedAt: existing?.completedAt ?? now, updatedAt: now }
+        values[actionId] = { value, completedAt: existing?.completedAt ?? Date.now() }
       } else {
-        // Tombstone : la suppression doit gagner le LWW pour se propager en synchro.
-        values[actionId] = { value: null, updatedAt: now }
+        delete values[actionId]
       }
       return { caseState: { ...state.caseState, values } }
     }),
@@ -45,8 +42,8 @@ export const useCaseStore = create<CaseStore>((set) => ({
   setValueAt: (actionId, value, at) =>
     set((state) => {
       const values = { ...state.caseState.values }
-      if (isFilledValue(value)) values[actionId] = { value, completedAt: at, updatedAt: at }
-      else values[actionId] = { value: null, updatedAt: at }
+      if (isFilledValue(value)) values[actionId] = { value, completedAt: at }
+      else delete values[actionId]
       return { caseState: { ...state.caseState, values } }
     }),
 

@@ -38,14 +38,14 @@ export function EvolutionLog({ actionId, editable }: { actionId: string; editabl
               if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') add()
             }}
             rows={2}
-            placeholder="Nouvelle note d’évolution (constantes, geste, événement…)"
-            className="w-full resize-y rounded-lg border border-slate-300 px-2.5 py-2 text-base focus:border-slate-500 focus:outline-none sm:text-sm"
+            placeholder="Nouvelle note d'évolution (constantes, geste, événement…)"
+            className="w-full resize-y rounded-lg border border-slate-300 px-2.5 py-2 text-sm focus:border-slate-500 focus:outline-none"
           />
           <button
             type="button"
             onClick={add}
             disabled={draft.trim() === ''}
-            className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors enabled:hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-slate-700 disabled:opacity-40"
           >
             <Plus size={15} /> Ajouter la note (horodatée maintenant)
           </button>
@@ -53,7 +53,7 @@ export function EvolutionLog({ actionId, editable }: { actionId: string; editabl
       )}
 
       {ordered.length === 0 ? (
-        <p className="text-sm text-slate-500">Aucune note pour le moment.</p>
+        <p className="text-sm text-slate-400">Aucune note pour le moment.</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {ordered.map((e) => (
@@ -70,7 +70,7 @@ export function EvolutionLog({ actionId, editable }: { actionId: string; editabl
                   type="button"
                   onClick={() => remove(e.at)}
                   aria-label="Supprimer la note"
-                  className="relative -m-1 shrink-0 rounded-md p-1.5 text-slate-300 transition-colors before:absolute before:-inset-x-2 before:-inset-y-1.5 hover:bg-slate-200 hover:text-slate-600"
+                  className="shrink-0 rounded p-0.5 text-slate-300 hover:bg-slate-200 hover:text-slate-600"
                 >
                   <X size={14} />
                 </button>

@@ -4,7 +4,6 @@ import { useCaseStore } from '../store/caseStore'
 import { canEditTrack, useUiStore } from '../store/uiStore'
 import { usePlayerStore } from '../store/playerStore'
 import { useResolvedValue } from '../store/selectors'
-import { displayValue } from '../engine/computed'
 import { isFilledValue } from '../lib/case'
 import { parseLog } from '../lib/evolutionLog'
 import { iconForCategory } from '../lib/icons'
@@ -41,9 +40,7 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
   const CategoryIcon = iconForCategory(action.category)
 
   const classes = [
-    // left/top : les cartes absolues glissent (au lieu de sauter) quand un
-    // horodatage les repositionne sur la timeline — comportement du transition-all d'origine.
-    'rounded-lg border px-2.5 py-1.5 text-start shadow-sm transition-[color,background-color,border-color,opacity,box-shadow,transform,left,top]',
+    'rounded-lg border px-2.5 py-1.5 text-left shadow-sm transition-all',
     'flex flex-col justify-between overflow-hidden',
     flow ? 'relative w-full' : 'absolute',
   ]
@@ -85,7 +82,7 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
             onClick={() => setValue(action.id, !checkboxDone)}
             aria-label={checkboxDone ? 'Décocher' : 'Cocher'}
             className={[
-              'relative mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border before:absolute before:-inset-2.5',
+              'mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border',
               checkboxDone ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white',
               inputsDisabled ? 'cursor-not-allowed' : '',
             ].join(' ')}
@@ -107,7 +104,7 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
             type="button"
             onClick={() => openAction(action.id)}
             aria-label="Détail"
-            className="relative shrink-0 text-slate-400 transition-colors before:absolute before:-inset-3 hover:text-slate-700"
+            className="shrink-0 text-slate-400 hover:text-slate-700"
           >
             <Info size={13} />
           </button>
@@ -119,16 +116,16 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
           <button
             type="button"
             onClick={() => openAction(action.id)}
-            className="relative flex items-center gap-1 rounded border border-slate-300 px-1.5 py-1 text-[11px] font-medium tabular-nums text-slate-600 transition-colors before:absolute before:-inset-y-2 hover:bg-slate-50"
+            className="flex items-center gap-1 rounded border border-slate-300 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:bg-slate-50"
           >
             <NotebookPen size={12} />
-            {logCount > 0 ? `${logCount} note${logCount > 1 ? 's' : ''}` : 'Ajouter une note'}
+            {logCount > 0 ? `${logCount} note${logCount > 1 ? 's' : ''}` : 'Ajouter une note'}
           </button>
         ) : (
           <>
-            {renderEditor(action, value, locked, !editable, setValue, flow)}
+            {renderEditor(action, value, locked, !editable, setValue)}
             {entry?.completedAt != null && (checkboxDone || filled) && (
-              <span className="ms-auto text-[10px] tabular-nums text-slate-500">
+              <span className="ml-auto text-[10px] tabular-nums text-slate-400">
                 {formatClock(entry.completedAt)}
               </span>
             )}
@@ -151,15 +148,8 @@ function renderEditor(
   locked: boolean,
   disabled: boolean,
   setValue: (id: string, v: ActionValue) => void,
-  flow: boolean,
 ) {
   if (locked) return <span className="text-[10px] italic text-slate-400">verrouillé</span>
-
-  // En vue Portée (cartes absolues), le créneau vertical est figé à PILL_H :
-  // un éditeur mobile de 32 px ferait déborder la carte sur la rangée du
-  // dessous. La taille 16 px anti-zoom iOS n'est donc servie qu'en mode flux
-  // (Pupitre — la vue par défaut sur mobile).
-  const sizeCls = flow ? 'h-8 text-base sm:h-6 sm:text-[11px]' : 'h-6 text-[11px]'
 
   const disabledCls = disabled ? 'cursor-not-allowed bg-slate-50 text-slate-500' : ''
 
@@ -172,7 +162,7 @@ function renderEditor(
           value={value === null || value === undefined ? '' : String(value)}
           placeholder={action.placeholder}
           onChange={(e) => setValue(action.id, e.target.value === '' ? null : Number(e.target.value))}
-          className={`${sizeCls} w-16 rounded border border-slate-300 px-1 tabular-nums focus:border-slate-500 focus:outline-none ${disabledCls}`}
+          className={`h-6 w-16 rounded border border-slate-300 px-1 text-[11px] tabular-nums focus:border-slate-500 focus:outline-none ${disabledCls}`}
         />
       )
     case 'select':
@@ -181,7 +171,7 @@ function renderEditor(
           disabled={disabled}
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => setValue(action.id, e.target.value || null)}
-          className={`${sizeCls} max-w-[150px] rounded border border-slate-300 bg-white px-1 focus:border-slate-500 focus:outline-none ${disabledCls}`}
+          className={`h-6 max-w-[150px] rounded border border-slate-300 bg-white px-1 text-[11px] focus:border-slate-500 focus:outline-none ${disabledCls}`}
         >
           <option value="">—</option>
           {action.options?.map((o) => (
@@ -199,13 +189,13 @@ function renderEditor(
           value={typeof value === 'string' ? value : ''}
           placeholder={action.placeholder}
           onChange={(e) => setValue(action.id, e.target.value || null)}
-          className={`${sizeCls} w-[150px] rounded border border-slate-300 px-1 focus:border-slate-500 focus:outline-none ${disabledCls}`}
+          className={`h-6 w-[150px] rounded border border-slate-300 px-1 text-[11px] focus:border-slate-500 focus:outline-none ${disabledCls}`}
         />
       )
     case 'computed':
       return (
-        <span className="whitespace-nowrap rounded bg-slate-800 px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-white">
-          {action.unit ? `${displayValue(value)} ${action.unit}` : displayValue(value)}
+        <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-white">
+          {action.unit ? `${value} ${action.unit}` : value}
         </span>
       )
     case 'checkbox':

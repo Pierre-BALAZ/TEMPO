@@ -22,21 +22,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
       - name: Installation de Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: npm
       - name: Installation des dépendances
         run: npm ci
       - name: Construction (Vite)
         run: npm run build
-        env:
-          # URL du serveur de salons (variable de repo, réglée par un admin —
-          # docs/DEPLOYMENT.md). Vide tant qu'elle n'existe pas : l'app propose
-          # alors la saisie manuelle de l'adresse du serveur.
-          VITE_SYNC_URL: ${{ vars.TEMPO_SYNC_URL }}
       - name: Préparation de l'artefact Pages
         uses: actions/upload-pages-artifact@v3
         with:
@@ -51,4 +46,4 @@ jobs:
     steps:
       - name: Déploiement sur GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
