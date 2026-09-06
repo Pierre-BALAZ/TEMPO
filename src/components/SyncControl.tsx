@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react'
-import { Users, Wifi, WifiOff, Settings2, AlertTriangle } from 'lucide-react'
+import { Users, Wifi, WifiOff, Settings2 } from 'lucide-react'
 import { useCaseStore } from '../store/caseStore'
 import { useRoomSync, type SyncStatus } from '../sync/useRoomSync'
+
+/**
+ * Serveur de synchro intégré : Cloudflare Worker + Durable Object (voir server/).
+ * Une variable de build `TEMPO_SYNC_URL` (injectée par deploy.yml) prime si présente,
+ * ce qui permet de changer d'URL sans toucher au code (cf. docs/DEPLOYMENT.md).
+ */
+const BUILTIN_SERVER =
+  (import.meta.env.VITE_TEMPO_SYNC_URL as string | undefined)?.trim() ||
+  'https://tempo-rooms.felix-amiot.workers.dev'
 
 const STORE_KEY = 'tempo:serverUrl'
 
@@ -30,23 +39,26 @@ const LABEL: Record<SyncStatus, string> = {
 export function SyncControl() {
   const codename = useCaseStore((s) => s.caseState.header.patientCodename)
   const sessionId = useCaseStore((s) => s.caseState.header.sessionId)
-  const [serverUrl, setServerUrl] = useState('')
+  // Par défaut : serveur intégré. Un override éventuel est mémorisé localement.
+  const [serverUrl, setServerUrl] = useState(BUILTIN_SERVER)
   const [enabled, setEnabled] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORE_KEY)
-      if (saved) setServerUrl(saved)
+      if (saved && saved.trim()) setServerUrl(saved)
     } catch {
       /* ignore */
     }
   }, [])
 
   const persistUrl = (v: string) => {
-    setServerUrl(v)
+    const next = v.trim() || BUILTIN_SERVER
+    setServerUrl(next)
     try {
-      localStorage.setItem(STORE_KEY, v)
+      if (v.trim()) localStorage.setItem(STORE_KEY, v.trim())
+      else localStorage.removeItem(STORE_KEY)
     } catch {
       /* ignore */
     }
@@ -87,6 +99,12 @@ export function SyncControl() {
         </div>
       </div>
 
+      {!canSync && (
+        <p className="text-[11px] text-slate-400">
+          Renseignez le nom de code du patient pour activer la synchro.
+        </p>
+      )}
+
       {enabled && roomCode && (
         <p className="text-xs text-slate-500">
           Salle : <span className="font-semibold text-indigo-700">{codename}</span>{' '}
@@ -95,29 +113,28 @@ export function SyncControl() {
         </p>
       )}
 
-      {(showSettings || !serverUrl.trim()) && (
+      {showSettings && (
         <div className="flex flex-col gap-1">
           <label className="text-[11px] font-medium text-slate-500">
-            Adresse de votre site WordPress (serveur de synchro)
+            Serveur de synchro (par défaut : serveur intégré)
           </label>
           <input
             type="url"
             value={serverUrl}
-            placeholder="https://mon-site.fr"
+            placeholder={BUILTIN_SERVER}
             onChange={(e) => persistUrl(e.target.value)}
             className="w-full rounded-md border border-slate-200 px-2 py-1 text-sm focus:border-indigo-300 focus:outline-none"
           />
-          <p className="flex items-start gap-1 text-[11px] text-slate-400">
-            <AlertTriangle size={12} className="mt-px shrink-0" />
-            Nécessite le plugin « TEMPO Sync » installé sur ce site. Les données du cas transitent
-            alors par votre serveur (salles éphémères, aucune identité réelle).
+          <p className="text-[11px] text-slate-400">
+            Laissez vide pour utiliser le serveur intégré. Les données du cas transitent par ce
+            serveur (salles éphémères, aucune identité réelle).
           </p>
         </div>
       )}
 
       {enabled && status === 'error' && (
         <p className="text-[11px] text-rose-600">
-          Connexion impossible ({error}). Vérifiez l'adresse et que le plugin est actif.
+          Connexion impossible ({error}). Réessayez dans un instant.
         </p>
       )}
     </div>

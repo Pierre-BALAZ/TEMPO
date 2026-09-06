@@ -1,4 +1,15 @@
-import { Check, Info, Lock, MousePointerClick, NotebookPen } from 'lucide-react'
+import { useState } from 'react'
+import {
+  Check,
+  Info,
+  Lock,
+  MousePointerClick,
+  NotebookPen,
+  Plus,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+} from 'lucide-react'
 import type { ActionDef, ActionValue, VisualEffect } from '../types/model'
 import { useCaseStore } from '../store/caseStore'
 import { canEditTrack, useUiStore } from '../store/uiStore'
@@ -143,13 +154,106 @@ export function ActionCell({ action, x, top, effect, flow = false }: Props) {
 }
 
 /** Extrait la dernière valeur d'un historique horodaté "ts:val|ts:val|…". */
-function latestTimestampedValue(value: ActionValue): number | null {
-  if (typeof value !== 'string' || value === '') return null
-  const parts = value.split('|')
-  const last = parts[parts.length - 1]
-  const val = last.split(':')[1]
-  const n = parseFloat(val)
-  return isNaN(n) ? null : n
+/** Dernière et avant-dernière valeur d'un historique horodaté "ts:val|ts:val|…". */
+function lastTwoValues(value: ActionValue): { last: number | null; prev: number | null } {
+  if (typeof value !== 'string' || value === '') return { last: null, prev: null }
+  const nums = value
+    .split('|')
+    .map((p) => parseFloat(p.split(':')[1]))
+    .filter((n) => !isNaN(n))
+  return {
+    last: nums.length > 0 ? nums[nums.length - 1] : null,
+    prev: nums.length > 1 ? nums[nums.length - 2] : null,
+  }
+}
+
+/**
+ * Saisie inline d'une constante horodatée : champ libre + bouton « + » pour
+ * ajouter une nouvelle valeur à l'historique. Affiche la dernière valeur et
+ * une flèche de tendance (↑ rouge / ↓ vert / – gris). L'historique complet
+ * reste accessible via le panneau de détail (ⓘ).
+ */
+function TimestampedInlineInput({
+  value,
+  unit,
+  placeholder,
+  disabled,
+  onAdd,
+}: {
+  value: ActionValue
+  unit?: string
+  placeholder?: string
+  disabled: boolean
+  onAdd: (n: number) => void
+}) {
+  const [draft, setDraft] = useState('')
+  const { last, prev } = lastTwoValues(value)
+
+  const commit = () => {
+    const n = parseFloat(draft.replace(',', '.'))
+    if (isNaN(n)) return
+    onAdd(n)
+    setDraft('')
+  }
+
+  const trend =
+    last !== null && prev !== null
+      ? last > prev
+        ? 'up'
+        : last < prev
+          ? 'down'
+          : 'flat'
+      : null
+  const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus
+
+  return (
+    <div className="flex items-center gap-1">
+      <input
+        type="number"
+        disabled={disabled}
+        value={draft}
+        placeholder={placeholder}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            commit()
+          }
+        }}
+        className={`h-6 w-16 rounded border border-slate-300 px-1 text-[11px] tabular-nums focus:border-slate-500 focus:outline-none ${
+          disabled ? 'cursor-not-allowed bg-slate-50 text-slate-500' : ''
+        }`}
+      />
+      <button
+        type="button"
+        disabled={disabled || draft.trim() === ''}
+        onClick={commit}
+        aria-label="Ajouter la valeur"
+        title="Ajouter la valeur"
+        className="grid h-6 w-6 shrink-0 place-items-center rounded border border-slate-300 text-slate-500 hover:bg-slate-50 disabled:opacity-40"
+      >
+        <Plus size={13} />
+      </button>
+      {last !== null && (
+        <span className="ml-0.5 flex items-center gap-0.5 text-[11px] tabular-nums text-slate-600">
+          {last}
+          {unit && <span className="text-[10px] text-slate-400">{unit}</span>}
+          {trend && (
+            <TrendIcon
+              size={12}
+              className={
+                trend === 'up'
+                  ? 'text-red-500'
+                  : trend === 'down'
+                    ? 'text-green-500'
+                    : 'text-slate-400'
+              }
+            />
+          )}
+        </span>
+      )}
+    </div>
+  )
 }
 
 function renderEditor(
@@ -166,19 +270,17 @@ function renderEditor(
   switch (action.type) {
     case 'number':
       if (action.timestamped) {
-        // Constante horodatée : la saisie se fait dans le panneau (historique + tendance).
-        const last = latestTimestampedValue(value)
         return (
-          <span className="text-[11px] tabular-nums text-slate-600">
-            {last !== null ? (
-              <>
-                {last}
-                {action.unit && <span className="ml-0.5 text-[10px] text-slate-400">{action.unit}</span>}
-              </>
-            ) : (
-              <span className="italic text-slate-400">via détail ⓘ</span>
-            )}
-          </span>
+          <TimestampedInlineInput
+            value={value}
+            unit={action.unit}
+            placeholder={action.placeholder}
+            disabled={disabled}
+            onAdd={(n) => {
+              const existing = typeof value === 'string' && value !== '' ? `${value}|` : ''
+              setValue(action.id, `${existing}${Date.now()}:${n}`)
+            }}
+          />
         )
       }
       return (
