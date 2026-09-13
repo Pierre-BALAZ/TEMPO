@@ -10,6 +10,20 @@ export interface RecapItem {
   valueText: string
 }
 
+/** Formate un historique horodaté "ts:val|ts:val|…" en "85 → 92 → 110" (ordre chronologique). */
+function formatTimestampedHistory(value: string): string | null {
+  if (typeof value !== 'string' || !value.includes(':')) return null
+  const vals = value
+    .split('|')
+    .map((p) => {
+      const seg = p.split(':')
+      const n = Number(seg[seg.length - 1])
+      return Number.isNaN(n) ? null : n
+    })
+    .filter((n): n is number => n !== null)
+  return vals.length > 0 ? vals.join(' → ') : null
+}
+
 function valueText(def: ActionDef, value: ActionValue): string {
   if (def.type === 'checkbox') return value === true ? 'fait' : ''
   if (value === null || value === undefined || value === '') return ''
@@ -17,7 +31,13 @@ function valueText(def: ActionDef, value: ActionValue): string {
     const opt = def.options?.find((o) => o.value === value)
     return opt ? opt.label : String(value)
   }
-  if (def.type === 'number') return def.unit ? `${value} ${def.unit}` : String(value)
+  if (def.type === 'number') {
+    if (def.timestamped && typeof value === 'string') {
+      const hist = formatTimestampedHistory(value)
+      if (hist !== null) return def.unit ? `${hist} ${def.unit}` : hist
+    }
+    return def.unit ? `${value} ${def.unit}` : String(value)
+  }
   return String(value)
 }
 
@@ -28,7 +48,13 @@ function subValueText(sf: SubField, value: ActionValue): string {
     const opt = sf.options?.find((o) => o.value === value)
     return opt ? opt.label : String(value)
   }
-  if (sf.type === 'number') return sf.unit ? `${value} ${sf.unit}` : String(value)
+  if (sf.type === 'number') {
+    if (sf.timestamped && typeof value === 'string') {
+      const hist = formatTimestampedHistory(value)
+      if (hist !== null) return sf.unit ? `${hist} ${sf.unit}` : hist
+    }
+    return sf.unit ? `${value} ${sf.unit}` : String(value)
+  }
   return String(value)
 }
 

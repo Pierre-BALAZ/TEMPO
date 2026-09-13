@@ -6,12 +6,30 @@ export function buildActionIndex(actions: ActionDef[]): ActionIndex {
   return new Map(actions.map((a) => [a.id, a]))
 }
 
+/**
+ * Dernière valeur numérique d'un historique horodaté "ts:val|ts:val|…".
+ * Renvoie null si la chaîne n'est pas un historique horodaté.
+ */
+function latestTimestamped(value: string): number | null {
+  if (!value.includes(':')) return null
+  const parts = value.split('|')
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const seg = parts[i].split(':')
+    const n = Number(seg[seg.length - 1])
+    if (!Number.isNaN(n)) return n
+  }
+  return null
+}
+
 /** Convertit une valeur d'action en nombre (checkbox => 1/0). */
 export function numericOf(value: ActionValue): number {
   if (typeof value === 'number') return value
   if (typeof value === 'boolean') return value ? 1 : 0
-  if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) {
-    return Number(value)
+  if (typeof value === 'string' && value.trim() !== '') {
+    // Constante horodatée : prendre la dernière valeur de l'historique.
+    const ts = latestTimestamped(value)
+    if (ts !== null) return ts
+    if (!Number.isNaN(Number(value))) return Number(value)
   }
   return 0
 }
@@ -67,6 +85,11 @@ function refDetail(ref: string, caseState: CaseState, index: ActionIndex): strin
   if (action?.type === 'select') {
     const opt = action.options?.find((o) => o.value === raw)
     return `${name} : ${opt?.label ?? String(raw)}`
+  }
+  // Constante horodatée : afficher la dernière valeur, pas la chaîne brute "ts:val".
+  if (action?.timestamped && typeof raw === 'string') {
+    const ts = latestTimestamped(raw)
+    if (ts !== null) return `${name} : ${ts}${action?.unit ? ' ' + action.unit : ''}`
   }
   return `${name} : ${String(raw)}${action?.unit ? ' ' + action.unit : ''}`
 }
