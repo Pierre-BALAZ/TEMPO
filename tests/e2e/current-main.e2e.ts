@@ -48,3 +48,20 @@ test('current-main eFAST six zones cycle present/absent/clear and stay read-only
   await browser.locator('aside div[title="Cliquez pour modifier : Péricarde"]').tap()
   await expect.poll(() => browser.evaluate(() => JSON.parse(localStorage.getItem('balaz.case.v1')!).values['prehosp.c.fast::pericarde']?.value)).toBe(null)
 })
+test('legacy numeric value renders in timestamp history', async ({ app, screen, browser }) => {
+  await app.open()
+  await screen.getByRole('button', 'SMUR / VSAV Équipe pré-hospitalière').tap()
+  await screen.getByRole('button', 'Pupitre', { exact: true }).tap()
+  await browser.evaluate(() => {
+    const c = JSON.parse(localStorage.getItem('balaz.case.v1')!)
+    c.values['prehosp.c.pas'] = { value: 86, updatedAt: Date.now() }
+    localStorage.setItem('balaz.case.v1', JSON.stringify(c))
+  })
+  await browser.reload()
+  await screen.getByRole('button', 'SMUR / VSAV Équipe pré-hospitalière').tap()
+  await screen.getByRole('button', 'Pupitre', { exact: true }).tap()
+  await browser.locator('[data-action-id="prehosp.c.pas"]').getByRole('button', 'Détail').tap()
+  await expect(browser.locator('aside')).toContainText('86')
+  await expect(browser.locator('aside')).toContainText('1 valeur(s)')
+  await expect.poll(() => browser.evaluate(() => JSON.parse(localStorage.getItem('balaz.case.v1')!).values['prehosp.c.pas'].value)).toBe(86)
+})

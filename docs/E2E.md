@@ -119,7 +119,7 @@ Le test est piloté par l'inventaire importé depuis la configuration : tout ajo
 
 ## Réconciliation main 6bb1239
 
-22 tests navigateur, 5 fichiers. `current-main.e2e.ts` vérifie les historiques PAS 86→95→100, rechargement, prompt terminé après passage observateur (70 refusé), et six zones eFAST présent→absent→effacé puis lecture seule. Le test exhaustif des détails couvre aussi les anciennes valeurs numériques liées : elles ne doivent pas faire disparaître l’interface des nouveaux historiques.
+23 tests navigateur, 5 fichiers. `current-main.e2e.ts` vérifie les historiques PAS 86→95→100, rechargement, prompt terminé après passage observateur (70 refusé), et six zones eFAST présent→absent→effacé puis lecture seule. Le test permanent legacy enregistre une PAS numérique86 dans localStorage, recharge puis ouvre le détail :86 et1valeur doivent être visibles, et la valeur persistée doit rester le nombre86 (pas une chaîne). La suppression de la garde numérique fait échouer ce test dans une copie isolée.
 
 Les tests unitaires upstream supprimés ne sont pas restaurés (39 tests actuels contre59 auparavant). Les règles ACSOS générées sont testées isolément : main a retiré leur installation dans le protocole. Aucun seuil ni règle clinique ajouté. Le parseur conserve les protections de mots entiers, décimales, nombres non tronqués et fenêtre entre champs ; une expression numérique plus spécifique (PAM) prime sur son préfixe générique (PAS).
 

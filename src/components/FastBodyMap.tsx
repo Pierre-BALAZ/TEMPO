@@ -17,7 +17,7 @@ interface Props {
 /**
  * Schéma interactif eFAST : 6 zones d'exploration échographique
  * Intégré dans le panneau de détail de l'item FAST écho.
- * 
+ *
  * Zones :
  * 1. Péricarde (épigastrique, centre haut)
  * 2. Hémothorax droit et espace de Morisson (flanc droit)
