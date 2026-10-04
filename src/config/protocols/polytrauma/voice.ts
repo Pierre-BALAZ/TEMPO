@@ -36,7 +36,7 @@ export interface VoiceSelect {
 }
 
 export const VOICE_NUMERIC: VoiceNumeric[] = [
-  { actionId: 'prehosp.c.pas', label: 'PAS', keywords: ['tension', 'pression arterielle', 'pression', 'systolique'], max: 300, unit: 'mmHg', avoidAfter: 'moyenne' },
+  { actionId: 'prehosp.c.pas', label: 'PAS', keywords: ['tension', 'pression arterielle', 'pression', 'systolique'], max: 300, unit: 'mmHg' },
   { actionId: 'prehosp.c.fc', label: 'Fréquence cardiaque', keywords: ['frequence cardiaque', 'frequence', 'pouls', 'coeur', 'fc'], max: 300, unit: '/min', avoidAfter: 'respir' },
   { actionId: 'prehosp.b.spo2', label: 'SpO₂', keywords: ['saturation', 'spo2', 'sp o2'], min: 0, max: 100, unit: '%' },
   { actionId: 'prehosp.d.gcs', label: 'Glasgow', keywords: ['glasgow', 'gcs'], min: 3, max: 15 },

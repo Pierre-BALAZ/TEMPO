@@ -12,7 +12,7 @@ export function isFilledValue(value: ActionValue): boolean {
 export function createEmptyCase(protocolId: string, now: number): CaseState {
   return {
     protocolId,
-    header: { caseStartedAt: now, patientCodename: randomComposer(), sessionId: randomId(10) },
+    header: { caseStartedAt: now, patientCodename: randomComposer(), sessionId: randomId() },
     values: {},
   }
 }

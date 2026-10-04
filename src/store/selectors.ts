@@ -10,10 +10,8 @@ export function useDerivedUiState(): DerivedUiState {
   return useMemo(() => evaluate(activeProtocol, caseState, actionIndex), [caseState])
 }
 
-/** Valeur résolue d'une action (calcule les `computed`).
- *  Le sélecteur retourne la valeur résolue elle-même : Zustand compare par
- *  Object.is, donc la cellule ne re-rend que si SA valeur change — et non à
- *  chaque frappe dans n'importe quel champ du cas. */
+/** Valeur résolue d'une action (calcule les `computed`). */
 export function useResolvedValue(actionId: string): ActionValue {
-  return useCaseStore((s) => resolveValue(actionId, s.caseState, actionIndex))
+  const caseState = useCaseStore((s) => s.caseState)
+  return useMemo(() => resolveValue(actionId, caseState, actionIndex), [caseState, actionId])
 }

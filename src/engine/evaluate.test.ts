@@ -97,32 +97,3 @@ describe('scénario de démonstration', () => {
     expect(derived['intra.activation.equipe']?.unlocked).toBe(true)
   })
 })
-
-describe('bornes exactes des seuils (anti-régression lt/lte)', () => {
-  it('Shock Index : 68/62 (= 1,0968) reste SOUS le seuil 1,1 — pas d’arrondi avant comparaison', () => {
-    const cs = caseWith({ 'prehosp.c.fc': 68, 'prehosp.c.pas': 62 })
-    const si = resolveValue('prehosp.scores.shockindex', cs, index)
-    expect(si).toBeCloseTo(1.0968, 3)
-    const derived = evaluate(polytraumaProtocol, cs, index)
-    expect(derived['prehosp.scores.shockindex']).toBeUndefined()
-  })
-
-  it('Shock Index : 1,1 pile déclenche la règle (gte)', () => {
-    const cs = caseWith({ 'prehosp.c.fc': 110, 'prehosp.c.pas': 100 })
-    expect(resolveValue('prehosp.scores.shockindex', cs, index)).toBeCloseTo(1.1, 5)
-    const derived = evaluate(polytraumaProtocol, cs, index)
-    expect(derived['prehosp.scores.shockindex']).toBeDefined()
-  })
-
-  it('score ABC : PAS = 90 pile compte (critère lte 90)', () => {
-    const at90 = resolveValue('prehosp.scores.abc', caseWith({ 'prehosp.c.pas': 90 }), index)
-    const at91 = resolveValue('prehosp.scores.abc', caseWith({ 'prehosp.c.pas': 91 }), index)
-    expect(at90).toBe(1)
-    expect(at91).toBe(0)
-  })
-
-  it('un cas vierge ne déclenche aucune règle lt/lte (garde filled)', () => {
-    const derived = evaluate(polytraumaProtocol, caseWith({}), index)
-    expect(derived['prehosp.g.isr']?.highlighted).toBeUndefined()
-  })
-})

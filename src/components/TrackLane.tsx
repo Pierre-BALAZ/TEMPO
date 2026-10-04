@@ -1,8 +1,7 @@
-import { ChevronDown, Eye, Pencil } from 'lucide-react'
+import { ChevronDown, ChevronRight, Eye, Pencil } from 'lucide-react'
 import type { ActionDef, DerivedUiState, SectionDef, TrackDef } from '../types/model'
 import { actionIndex, activeProtocol } from '../config'
 import { resolveValue } from '../engine/evaluate'
-import { displayValue } from '../engine/computed'
 import { actionsOfSection, actionsOfTrack } from '../lib/protocol'
 import { iconForCategory } from '../lib/icons'
 import { isFilledValue } from '../lib/case'
@@ -53,15 +52,15 @@ export function TrackLane({ track, derived, totalMinutes, dimmed }: Props) {
             type="button"
             onClick={() => toggleCollapsed(track.id)}
             title={collapsed ? 'Développer' : 'Réduire'}
-            className="relative -m-1 rounded p-1.5 transition-colors before:absolute before:-inset-2 hover:bg-white/20"
+            className="rounded p-0.5 hover:bg-white/20"
           >
-            <ChevronDown size={16} className={`transition-transform duration-200 ${collapsed ? '-rotate-90' : ''}`} />
+            {collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
           </button>
           {!compact && <span className="grow leading-tight">{track.label}</span>}
           {roleChosen && (
             <span
               title={editable ? 'Vous éditez cette ligne' : 'Lecture seule'}
-              className="flex shrink-0 items-center rounded bg-white/20 p-1"
+              className={`flex shrink-0 items-center rounded bg-white/20 p-1 ${compact ? '' : ''}`}
             >
               {editable ? <Pencil size={12} /> : <Eye size={12} />}
             </span>
@@ -148,7 +147,7 @@ function CollapsedLane({
           </ul>
         ) : (
           <>
-            <span className="text-[11px] italic text-slate-500">vue réduite — {acts.length}&nbsp;actions</span>
+            <span className="text-[11px] italic text-slate-400">vue réduite — {acts.length} actions</span>
             <ul className="flex flex-col gap-0.5">
               {track.sections.map((s) => (
                 <li
@@ -207,10 +206,7 @@ function MiniIcon({
   const highlighted = Boolean(effect?.highlighted) && !locked
   const levelStyle = effect?.level ? LEVEL_STYLES[effect.level] : undefined
 
-  const classes = [
-    'absolute grid place-items-center rounded-md border transition-[color,background-color,border-color,box-shadow,left,top] before:absolute before:-inset-[3px]',
-  ]
-  if (!action.detail) classes.push('cursor-default')
+  const classes = ['absolute grid place-items-center rounded-md border transition-all']
   if (locked) classes.push('border-dashed border-slate-300 bg-slate-100 text-slate-300')
   else if (checkboxDone) classes.push('border-emerald-300 bg-emerald-100 text-emerald-700')
   else if (filled) classes.push('border-sky-300 bg-sky-100 text-sky-700')
@@ -220,7 +216,7 @@ function MiniIcon({
 
   const valueText =
     value !== null && value !== undefined && value !== '' && typeof value !== 'boolean'
-      ? `\u00A0: ${displayValue(value)}`
+      ? ` : ${value}`
       : ''
   const timeText = completedAt != null && (checkboxDone || filled) ? ` — ${formatClock(completedAt)}` : ''
 

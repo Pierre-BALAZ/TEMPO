@@ -184,9 +184,13 @@ export const actions: ActionDef[] = [
     id: 'prehosp.x.hemostase',
     trackId: 'prehosp',
     sectionId: 'prehosp.abcde',
-    label: 'X — Hémorragie exsanguinante (garrot / packing / CCP)',
-    type: 'checkbox',
+    label: 'X — Hémorragie exsanguinante',
+    type: 'select',
     category: 'hemorrhage',
+    options: [
+      { value: 'oui', label: 'Oui' },
+      { value: 'non', label: 'Non' },
+    ],
     defaultTimeOffsetMin: 2,
     detail: {
       reminder:
@@ -194,12 +198,17 @@ export const actions: ActionDef[] = [
     },
   },
   {
-    id: 'prehosp.a.lvas',
+    id: 'prehosp.a.vas',
     trackId: 'prehosp',
     sectionId: 'prehosp.abcde',
-    label: 'A — LVAS',
-    type: 'checkbox',
+    label: 'A — VAS',
+    type: 'select',
     category: 'airway',
+    options: [
+      { value: 'libres', label: 'Libres' },
+      { value: 'a_risque', label: 'À risque' },
+      { value: 'obstruees', label: 'Obstruées' },
+    ],
     defaultTimeOffsetMin: 3,
   },
   {
@@ -212,6 +221,16 @@ export const actions: ActionDef[] = [
     unit: '%',
     placeholder: 'ex. 94',
     defaultTimeOffsetMin: 4,
+    timestamped: true,
+    detail: {
+      subFields: [
+        { id: 'aa', type: 'select', label: 'Source', options: [
+          { value: 'aa', label: 'Air ambiant' },
+          { value: 'o2', label: 'Oxygène' },
+        ]},
+        { id: 'lmin', type: 'number', label: 'Débit', unit: 'L/min', placeholder: 'ex. 9' },
+      ],
+    },
   },
   {
     id: 'prehosp.b.fr',
@@ -223,6 +242,7 @@ export const actions: ActionDef[] = [
     unit: '/min',
     placeholder: 'ex. 22',
     defaultTimeOffsetMin: 4,
+    timestamped: true,
   },
   {
     id: 'prehosp.b.pneumothorax',
@@ -247,6 +267,7 @@ export const actions: ActionDef[] = [
     unit: 'mmHg',
     placeholder: 'ex. 85',
     defaultTimeOffsetMin: 4,
+    timestamped: true,
   },
   {
     id: 'prehosp.c.fc',
@@ -258,6 +279,7 @@ export const actions: ActionDef[] = [
     unit: '/min',
     placeholder: 'ex. 124',
     defaultTimeOffsetMin: 4,
+    timestamped: true,
   },
   {
     id: 'prehosp.c.hemocue',
@@ -269,6 +291,7 @@ export const actions: ActionDef[] = [
     unit: 'g/dL',
     placeholder: 'ex. 9.5',
     defaultTimeOffsetMin: 4,
+    timestamped: true,
   },
   {
     id: 'prehosp.c.traumabassin',
@@ -295,6 +318,34 @@ export const actions: ActionDef[] = [
       { value: 'negative', label: 'Négative' },
     ],
     defaultTimeOffsetMin: 4,
+    detail: {
+      subFields: [
+        { id: 'pericarde', type: 'select', label: 'Péricarde (épigastrique)', options: [
+          { value: 'present', label: 'Épanchement présent' },
+          { value: 'absent', label: 'Épanchement absent' },
+        ]},
+        { id: 'hemo_droit', type: 'select', label: 'Hémothorax D + Espace de Morisson', options: [
+          { value: 'present', label: 'Épanchement présent' },
+          { value: 'absent', label: 'Épanchement absent' },
+        ]},
+        { id: 'hemo_gauche', type: 'select', label: 'Hémothorax G + Espace de Kuhler', options: [
+          { value: 'present', label: 'Épanchement présent' },
+          { value: 'absent', label: 'Épanchement absent' },
+        ]},
+        { id: 'bassin', type: 'select', label: 'Cul de sac de Douglas (sus-pubien)', options: [
+          { value: 'present', label: 'Épanchement présent' },
+          { value: 'absent', label: 'Épanchement absent' },
+        ]},
+        { id: 'pnx_droit', type: 'select', label: 'Pneumothorax droit (apex D)', options: [
+          { value: 'present', label: 'Pneumothorax présent' },
+          { value: 'absent', label: 'Pneumothorax absent' },
+        ]},
+        { id: 'pnx_gauche', type: 'select', label: 'Pneumothorax gauche (apex G)', options: [
+          { value: 'present', label: 'Pneumothorax présent' },
+          { value: 'absent', label: 'Pneumothorax absent' },
+        ]},
+      ],
+    },
   },
   {
     id: 'prehosp.d.gcs',
@@ -305,6 +356,7 @@ export const actions: ActionDef[] = [
     category: 'neuro',
     placeholder: '3–15',
     defaultTimeOffsetMin: 5,
+    timestamped: true,
   },
   {
     id: 'prehosp.d.anisocorie',
@@ -325,6 +377,33 @@ export const actions: ActionDef[] = [
     unit: 'mmol/L',
     placeholder: 'ex. 5.5',
     defaultTimeOffsetMin: 5,
+    timestamped: true,
+  },
+  {
+    id: 'prehosp.d.deficit_neurologique',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.abcde',
+    label: 'D — Déficit neurologique',
+    type: 'select',
+    category: 'neuro',
+    options: [
+      { value: 'oui', label: 'Oui' },
+      { value: 'non', label: 'Non' },
+    ],
+    defaultTimeOffsetMin: 7,
+  },
+  {
+    id: 'prehosp.d.otorragie',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.abcde',
+    label: 'D — Otorragie',
+    type: 'select',
+    category: 'neuro',
+    options: [
+      { value: 'oui', label: 'Oui' },
+      { value: 'non', label: 'Non' },
+    ],
+    defaultTimeOffsetMin: 8,
   },
   {
     id: 'prehosp.e.hypothermie',
@@ -345,6 +424,20 @@ export const actions: ActionDef[] = [
     unit: '°C',
     placeholder: 'ex. 36,5',
     defaultTimeOffsetMin: 6,
+  },
+  {
+    id: 'prehosp.g.noradrenaline',
+    trackId: 'prehosp',
+    sectionId: 'prehosp.gestes',
+    label: 'Noradrénaline',
+    type: 'checkbox',
+    category: 'medication',
+    detail: {
+      subFields: [
+        { id: 'posologie', type: 'number', label: 'Posologie', unit: 'mg/h', placeholder: 'ex. 5', timestamped: true },
+      ],
+    },
+    defaultTimeOffsetMin: 12,
   },
   {
     id: 'prehosp.g.garrot',
@@ -427,6 +520,7 @@ export const actions: ActionDef[] = [
           unit: 'mmHg',
           group: 'Ventilation / oxygénation',
           gauge: { min: 15, max: 60, normalMin: 35, normalMax: 45 },
+          timestamped: true,
         },
         {
           id: 'spo2',

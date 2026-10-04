@@ -60,6 +60,11 @@ function extractNumber(text: string, f: VoiceNumeric): number | null {
   for (const kw of kws) {
     let idx = wordIndexOf(text, kw)
     while (idx >= 0) {
+      // Prefer a more specific field phrase at the same position (PAM vs PAS).
+      if (ALL_NUMERIC_KEYWORDS.some(other => !own.has(other) && other.length > kw.length && wordIndexOf(text, other, idx) === idx)) {
+        idx = wordIndexOf(text, kw, idx + kw.length)
+        continue
+      }
       let after = text.slice(idx + kw.length, idx + kw.length + 22)
       // Fenêtre bornée au prochain mot-clé d'un AUTRE champ : sinon
       // « pouls non pris saturation 95 » attribuerait le 9 de 95 à la FC.

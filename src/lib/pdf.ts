@@ -1,7 +1,6 @@
 import type { ActionDef, ActionValue, CaseState, Protocol } from '../types/model'
 import { actionIndex } from '../config'
 import { resolveValue } from '../engine/evaluate'
-import { displayValue } from '../engine/computed'
 import { isFilledValue } from './case'
 import { formatClock } from './timeline'
 
@@ -12,11 +11,9 @@ function formatValue(action: ActionDef, value: ActionValue): string {
     case 'select':
       return action.options?.find((o) => o.value === value)?.label ?? String(value ?? '')
     case 'computed':
-      return action.id.includes('vittel')
-        ? `${displayValue(value)}\u00A0critère(s)`
-        : String(displayValue(value))
+      return action.id.includes('vittel') ? `${value} critère(s)` : String(value)
     case 'number':
-      return value != null && value !== '' ? `${value}${action.unit ? '\u00A0' + action.unit : ''}` : ''
+      return value != null && value !== '' ? `${value}${action.unit ? ' ' + action.unit : ''}` : ''
     default:
       return value != null ? String(value) : ''
   }
@@ -62,17 +59,17 @@ export async function exportCasePdf(caseState: CaseState, protocol: Protocol): P
   }
 
   // En-tête
-  line('TEMPO — partition d’urgence — récapitulatif', { size: 18, style: 'bold' })
+  line('Partition d’urgence — récapitulatif', { size: 18, style: 'bold' })
   line(protocol.label, { size: 11, color: [100, 116, 139], gap: 6 })
 
   const h = caseState.header
   const now = Date.now()
-  const elapsedMs = (h.chronoStoppedAt ?? now) - h.caseStartedAt - (h.chronoPausedMs ?? 0)
+  const elapsedMs = (h.chronoStoppedAt ?? now) - h.caseStartedAt
   const elapsedMin = Math.max(0, Math.round(elapsedMs / 60000))
-  line(`Régulateur\u00A0: ${h.regulateurName || '—'}    SMUR/VSAV\u00A0: ${h.smurName || '—'}`, { size: 10 })
-  line(`Service receveur\u00A0: ${h.serviceReceveur || '—'}`, { size: 10 })
+  line(`Régulateur : ${h.regulateurName || '—'}    SMUR/VSAV : ${h.smurName || '—'}`, { size: 10 })
+  line(`Service receveur : ${h.serviceReceveur || '—'}`, { size: 10 })
   line(
-    `Chrono\u00A0: ${elapsedMin}\u00A0min écoulées (départ ${formatClock(h.caseStartedAt)}${h.chronoStoppedAt ? `, arrêt ${formatClock(h.chronoStoppedAt)}` : ''})`,
+    `Chrono : ${elapsedMin} min écoulées (départ ${formatClock(h.caseStartedAt)}${h.chronoStoppedAt ? `, arrêt ${formatClock(h.chronoStoppedAt)}` : ''})`,
     { size: 10, gap: 10 },
   )
 
@@ -82,7 +79,7 @@ export async function exportCasePdf(caseState: CaseState, protocol: Protocol): P
       .filter((a) => a.trackId === track.id)
       .map((a) => ({ a, value: resolveValue(a.id, caseState, actionIndex), at: caseState.values[a.id]?.completedAt }))
       .filter(({ a, value }) => isDone(a, value))
-      .sort((x, z) => (x.at ?? Number.MAX_SAFE_INTEGER) - (z.at ?? Number.MAX_SAFE_INTEGER))
+      .sort((x, z) => (x.at ?? Infinity) - (z.at ?? Infinity))
 
     ensure(28)
     line(track.label, { size: 13, style: 'bold', color: [15, 23, 42], gap: 2 })
@@ -93,7 +90,7 @@ export async function exportCasePdf(caseState: CaseState, protocol: Protocol): P
     for (const { a, value, at } of rows) {
       const time = at != null ? formatClock(at) : '—'
       const val = formatValue(a, value)
-      line(`[${time}]  ${a.label}${val ? `\u00A0: ${val}` : ''}`, { size: 10 })
+      line(`[${time}]  ${a.label}${val ? ` : ${val}` : ''}`, { size: 10 })
     }
     y += 6
   }

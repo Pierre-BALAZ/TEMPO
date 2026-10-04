@@ -1,7 +1,5 @@
+import { useEffect, useState } from 'react'
 import { Hourglass, Pause, Play, Timer } from 'lucide-react'
-import { activeProtocol } from '../config'
-import { useNow } from '../hooks/useNow'
-import { passedBadgeMilestones } from '../lib/milestones'
 import { useCaseStore } from '../store/caseStore'
 import { canEditTrack, useUiStore } from '../store/uiStore'
 import { formatClock } from '../lib/timeline'
@@ -20,24 +18,26 @@ function formatElapsed(ms: number): string {
 export function Stopwatch() {
   const caseStartedAt = useCaseStore((s) => s.caseState.header.caseStartedAt)
   const stoppedAt = useCaseStore((s) => s.caseState.header.chronoStoppedAt)
-  const pausedMs = useCaseStore((s) => s.caseState.header.chronoPausedMs ?? 0)
   const setHeader = useCaseStore((s) => s.setHeader)
   const canStop = useUiStore((s) => canEditTrack(s.activeRole, s.roleChosen, 'intra'))
 
+  const [now, setNow] = useState(() => Date.now())
   const running = stoppedAt == null
-  const now = useNow(running)
 
-  const elapsed = (stoppedAt ?? now) - caseStartedAt - pausedMs
-  const passedBadges = passedBadgeMilestones(activeProtocol.milestones ?? [], elapsed)
+  useEffect(() => {
+    if (!running) return
+    const id = window.setInterval(() => setNow(Date.now()), 1000)
+    return () => window.clearInterval(id)
+  }, [running])
+
+  const elapsed = (stoppedAt ?? now) - caseStartedAt
+  const goldenHourPassed = elapsed >= 60 * 60_000
 
   const stop = () => setHeader({ chronoStoppedAt: Date.now() })
-  // La reprise cumule la période d'arrêt : le chrono repart là où il s'était
-  // arrêté, sans déplacer caseStartedAt (les actions passées restent en place).
-  const resume = () =>
-    setHeader({
-      chronoStoppedAt: undefined,
-      chronoPausedMs: pausedMs + (stoppedAt != null ? Date.now() - stoppedAt : 0),
-    })
+  const resume = () => {
+    setNow(Date.now())
+    setHeader({ chronoStoppedAt: undefined })
+  }
 
   return (
     <div
@@ -51,7 +51,7 @@ export function Stopwatch() {
           Chrono
         </span>
         {running ? (
-          <span className="flex items-center gap-1 whitespace-nowrap text-[11px] text-emerald-400">
+          <span className="flex items-center gap-1 text-[11px] text-emerald-400">
             <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" /> en cours
           </span>
         ) : (
@@ -63,18 +63,17 @@ export function Stopwatch() {
         {formatElapsed(elapsed)}
       </div>
 
-      {passedBadges.map((m) => (
+      {goldenHourPassed && (
         <span
-          key={m.id}
-          title={`Plus de ${m.atMin}\u00A0minutes écoulées depuis le début de la prise en charge`}
-          className="flex animate-blink items-center gap-1.5 whitespace-nowrap rounded-lg bg-rose-600 px-2.5 py-1.5 text-sm font-bold text-white ring-2 ring-rose-300"
+          title="Plus de 60 minutes écoulées depuis le début de la prise en charge"
+          className="flex animate-blink items-center gap-1.5 rounded-lg bg-rose-600 px-2.5 py-1.5 text-sm font-bold text-white ring-2 ring-rose-300"
         >
-          <Hourglass size={15} /> {m.badge}
+          <Hourglass size={15} /> Golden hour
         </span>
-      ))}
+      )}
 
       <div className="ml-auto flex items-center gap-3">
-        <span className={`text-xs tabular-nums ${running ? 'text-slate-300' : 'text-rose-700'}`}>
+        <span className={`text-xs ${running ? 'text-slate-300' : 'text-rose-700'}`}>
           départ {formatClock(caseStartedAt)}
           {!running && stoppedAt != null && <> · arrêt {formatClock(stoppedAt)}</>}
         </span>
@@ -83,7 +82,7 @@ export function Stopwatch() {
             <button
               type="button"
               onClick={stop}
-              className="flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-sm font-bold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-rose-700 active:scale-[0.96]"
+              className="flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-sm font-bold text-white hover:bg-rose-700"
             >
               <Pause size={16} /> Arrêter
             </button>
@@ -91,15 +90,15 @@ export function Stopwatch() {
             <button
               type="button"
               onClick={resume}
-              className="flex items-center gap-1.5 rounded-lg bg-slate-800 px-3 py-2 text-sm font-bold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-slate-700 active:scale-[0.96]"
+              className="flex items-center gap-1.5 rounded-lg bg-slate-800 px-3 py-2 text-sm font-bold text-white hover:bg-slate-700"
             >
               <Play size={16} /> Reprendre
             </button>
           )
         ) : (
           running && (
-            <span className="text-[11px] italic text-slate-500">
-              arrêt réservé à l’équipe hôpital
+            <span className="text-[11px] italic text-slate-400">
+              arrêt réservé à l'équipe hôpital
             </span>
           )
         )}

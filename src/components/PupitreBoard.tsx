@@ -61,7 +61,7 @@ export function PupitreBoard() {
                   headCls.push(`${lvl.bg} ${lvl.text} ${lvl.ring} ring-2`)
                   if (secEff?.blink) headCls.push('animate-blink')
                 } else {
-                  headCls.push('bg-slate-100 text-slate-600')
+                  headCls.push('bg-slate-100 text-slate-500')
                 }
 
                 return (

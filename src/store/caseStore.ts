@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import type { ActionValue, CaseHeader, CaseState } from '../types/model'
+import type { ActionValue, CaseHeader, CaseState, TrackId } from '../types/model'
 import { createEmptyCase, isFilledValue } from '../lib/case'
-import { canEditCase, canEditHeader } from './uiStore'
+import { canEditCase, canEditHeader, canEditTrack, useUiStore } from './uiStore'
 import { activeProtocol } from '../config'
 import { readCaseFromHash } from '../share/urlState'
 import { loadCase as loadSaved } from '../share/persistence'
@@ -30,6 +30,8 @@ export const useCaseStore = create<CaseStore>((set) => ({
 
   setValue: (actionId, value) =>
     set((state) => {
+      const ui = useUiStore.getState()
+      if (!canEditTrack(ui.activeRole, ui.roleChosen, actionId.split('.')[0] as TrackId)) return state
       const values = { ...state.caseState.values }
       const now = Date.now()
       if (isFilledValue(value)) {
@@ -45,6 +47,7 @@ export const useCaseStore = create<CaseStore>((set) => ({
 
   setValueAt: (actionId, value, at) =>
     set((state) => {
+      if (!canEditCase()) return state
       const values = { ...state.caseState.values }
       if (isFilledValue(value)) values[actionId] = { value, completedAt: at, updatedAt: at }
       else values[actionId] = { value: null, updatedAt: at }

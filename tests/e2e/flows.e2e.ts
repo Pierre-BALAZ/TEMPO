@@ -23,6 +23,14 @@ for (const [track, role] of [['regul', 'Régulateur'], ['prehosp', 'SMUR / VSAV'
       if (action.type === 'checkbox') await editor.tap()
       else if (action.type === 'select') await editor.selectOption({ value: action.options![0].value })
       else await editor.fill(action.type === 'number' ? '12' : 'FICTIF E2E')
+      if (action.timestamped) {
+        await card.getByRole('button', 'Ajouter la valeur').tap()
+        await expect.poll(() => browser.evaluate(id => String(JSON.parse(localStorage.getItem('balaz.case.v1')!).values[id]?.value).split('|').at(-1)?.split(':').at(-1), action.id)).toBe('12')
+        await editor.fill('14')
+        await editor.press('Enter')
+        await expect.poll(() => browser.evaluate(id => String(JSON.parse(localStorage.getItem('balaz.case.v1')!).values[id]?.value).split('|').length, action.id)).toBe(2)
+        continue
+      }
       const expected = action.type === 'checkbox' ? true : action.type === 'select' ? action.options![0].value : action.type === 'number' ? 12 : 'FICTIF E2E'
       await expect.poll(() => browser.evaluate(id => JSON.parse(localStorage.getItem('balaz.case.v1')!).values[id]?.value, action.id)).toBe(expected)
       if (action.type === 'checkbox') await card.getByRole('button', 'Décocher').tap()
@@ -56,7 +64,7 @@ test('Vittel criteria, three-track unlock chain, timestamps and reload', async (
   await expect(card('intra.activation.equipe').getByRole('button', 'Décocher')).toBeDisabled()
 })
 
-test('demo, URL hydration priority, share snapshot, local reload, reset accept/dismiss, PDF', async ({ screen, browser, app }) => {
+test('demo, URL hydration priority, share snapshot, local reload, immediate reset, PDF', async ({ screen, browser, app }) => {
   await screen.getByRole('button', 'Scénario démo', { exact: true }).tap()
   const demo = await browser.evaluate(() => JSON.parse(localStorage.getItem('balaz.case.v1')!))
   await expect(Object.keys(demo.values).length).toBeGreaterThan(10)
@@ -72,7 +80,7 @@ test('demo, URL hydration priority, share snapshot, local reload, reset accept/d
   await browser.reload()
   await screen.getByRole('button', 'Observateur Démo / lecture seule').tap()
   await expect(screen.getByPlaceholder('Nom de code (ex. Chopin, 314…)')).toHaveValue(demo.header.patientCodename ?? '')
-  await expect(await browser.url()).not.toContain('#')
+  await expect(await browser.url()).toContain('#s=')
   await screen.getByRole('button', 'Récap', { exact: true }).tap()
   await expect(screen.getByRole('table').getByRole('row')).toHaveCount(buildRecap(demo, activeProtocol, actionIndex).length + 1)
   await screen.getByRole('button', 'Fermer', { exact: true }).tap()
@@ -85,11 +93,6 @@ test('demo, URL hydration priority, share snapshot, local reload, reset accept/d
   await expect(pdf.subarray(0, 5).toString()).toBe('%PDF-')
   await expect(pdf.length).toBeGreaterThan(1000)
   await screen.getByRole('button', 'Régulateur', { exact: true }).tap()
-  const dismiss = await browser.onDialog('dismiss')
-  await screen.getByRole('button', 'Réinitialiser', { exact: true }).tap()
-  await expect(screen.getByPlaceholder('Nom de code (ex. Chopin, 314…)')).toHaveValue(demo.header.patientCodename ?? '')
-  await dismiss()
-  await browser.onDialog('accept')
   await screen.getByRole('button', 'Réinitialiser', { exact: true }).tap()
   await expect.poll(() => browser.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('balaz.case.v1')!).values).length)).toBe(0)
   await app.restart()
@@ -143,9 +146,16 @@ for (const [track, role] of [['regul', 'Régulateur'], ['prehosp', 'SMUR / VSAV'
       await browser.locator(`[data-action-id="${action.id}"]`).getByRole('button', 'Détail').tap()
       for (const sf of action.detail!.subFields!) {
         const aside = browser.locator('aside')
+        if (sf.timestamped) {
+          const unsubscribe = await browser.onDialog(async d => { await d.accept('12') })
+          await aside.getByRole('button', 'Ajouter valeur', { exact: true }).nth((action.timestamped ? 1 : 0) + action.detail!.subFields!.filter(f => f.timestamped).indexOf(sf)).tap()
+          await unsubscribe()
+          await expect.poll(() => browser.evaluate(key => String(JSON.parse(localStorage.getItem('balaz.case.v1')!).values[key]?.value).endsWith(':12'), sf.bindTo ?? `${action.id}::${sf.id}`)).toBe(true)
+          continue
+        }
         const control = sf.type === 'checkbox' || sf.type === 'timestamp'
           ? aside.getByRole('button', sf.type === 'timestamp' ? `${sf.label} — noter l’heure` : sf.label, { exact: true })
-          : sf.gauge ? aside.getByRole('slider').nth(action.detail!.subFields!.filter(s => s.gauge).indexOf(sf))
+          : sf.gauge ? aside.getByRole('slider').nth(action.detail!.subFields!.filter(s => s.gauge && !s.timestamped).indexOf(sf))
           : aside.getByLabel(sf.label, { exact: true })
         if (sf.type === 'checkbox' || sf.type === 'timestamp') await control.tap()
         else if (sf.type === 'select') await control.selectOption({ value: sf.options![0].value })
@@ -171,7 +181,7 @@ test('evolution note add/delete, Wallace select/clear, stopwatch permissions and
   const log = actions.find(a => a.detail?.widget === 'evolutionLog')!
   await browser.locator(`[data-action-id="${log.id}"]`).getByRole('button', 'Détail').tap()
   await expect(screen.getByRole('button', 'Ajouter la note (horodatée maintenant)')).toBeDisabled()
-  await screen.getByPlaceholder('Nouvelle note d’évolution (constantes, geste, événement…)').fill('FICTIF note e2e')
+  await screen.getByPlaceholder('Nouvelle note d\'évolution (constantes, geste, événement…)').fill('FICTIF note e2e')
   await screen.getByRole('button', 'Ajouter la note (horodatée maintenant)').tap()
   await expect(browser.locator('aside')).toContainText('FICTIF note e2e')
   await screen.getByRole('button', 'Supprimer la note').tap()
@@ -240,12 +250,12 @@ test('mobile owner editor, header fields, sources, WhatsApp and print popup bloc
   await expect(blocked).toContain('Autorisez les fenêtres pop-up')
 })
 
-test('hold-to-reset completes without a second confirmation and stays empty after reload', async ({ screen, browser }) => {
+test('current immediate reset repeats safely and stays empty after reload', async ({ screen, browser }) => {
   await screen.getByRole('button', 'Scénario démo', { exact: true }).tap()
   await expect.poll(() => browser.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('balaz.case.v1')!).values).length)).toBeGreaterThan(10)
   let dialogs = 0
   await browser.onDialog(async d => { dialogs++; await d.dismiss() })
-  await screen.getByRole('button', 'Réinitialiser', { exact: true }).longPress({ duration: 2300 })
+  await screen.getByRole('button', 'Réinitialiser', { exact: true }).tap()
   await expect.poll(() => browser.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('balaz.case.v1')!).values).length)).toBe(0)
   await expect(dialogs).toBe(0)
   await browser.reload()

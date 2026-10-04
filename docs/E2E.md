@@ -20,8 +20,8 @@ Le runner lance Vite uniquement sur `127.0.0.1:4315`, strictPort. Les tests `roo
 | RoleGate/RoleSwitcher, uiStore | 4 rôles ; 3 pistes ; en-tête intervenant réservé à sa piste, nom de code/global reset/démo aux éditeurs ; chaque éditeur carte propriétaire écrit/efface localStorage ; cartes étrangères désactivées | rôles de prévention UI, pas authentification serveur |
 | ActionDetailPanel + actions.ts | Tous les sous-champs configurés, checklist/timestamp/nombre/texte/select/jauge ; propriétaire autorisé, observateur désactivé | aucune validation médicale du contenu |
 | rules.ts / engine | Vittel calculé ; grade → pré-alerte → équipe ; Wallace 22.5 → remplissage puis reverrouillage | les autres branches/bornes cliniques relèvent des tests unitaires existants, pas chacune d'un scénario navigateur |
-| CaseHeader/persistence/urlState | champs fictifs ; rechargement ; snapshot partagé prioritaire ; hash retiré ; reset annulé/confirmé/maintenu 2s sans double confirmation et redémarrage ; JSON/hash corrompus | quota stockage privé non simulé |
-| DemoCaseButton/GuidedPlayer | scénario prérempli, navigation/Pause/Reprendre/vitesse/quitter | narration acoustique et visite complète chronométrée non vérifiées |
+| CaseHeader/persistence/urlState | champs fictifs ; rechargement ; snapshot partagé prioritaire ; hash conservé et actualisé après édition ; reset immédiat répétable et redémarrage ; JSON/hash corrompus | quota stockage privé non simulé |
+| DemoCaseButton/GuidedPlayer | scénario prérempli, navigation/Pause/Reprendre/vitesse/quitter sans restauration, garde de rôle courante | narration acoustique et visite complète chronométrée non vérifiées |
 | EvolutionLog/BurnBodyMap/Stopwatch | note vide/add/delete ; zones sélectionnées/effacées ; chrono intra uniquement arrêt/reprise persistés | aucune donnée réelle |
 | Recap/ShareBar | lignes calculées exactes du scénario ; fichier téléchargé `%PDF-` >1000 octets ; WhatsApp URL interceptée ; popup impression refusé | pas d'envoi WhatsApp ni impression physique ; contenu PDF non analysé texte par texte |
 | useBroadcastSync/merge | vrai BroadcastChannel local synthétique ; fusion visible/persistée ; message invalide ignoré | second product UI simultané non piloté ; tests unitaires LWW existants |
@@ -36,12 +36,12 @@ Le runner lance Vite uniquement sur `127.0.0.1:4315`, strictPort. Les tests `roo
 1. **Détail : observateur modifiait les critères**, bien que les cartes soient en lecture seule. `permissions.e2e.ts` échouait sur `toBeDisabled` pour « Glasgow <13 ». Un fieldset désactivé et une garde de callback appliquent le rôle aux sous-champs ; le test est vert. Toutes les familles de sous-champs sont ensuite exercées par propriétaire/observateur.
 2. **Dictée après changement de rôle : une transcription tardive écrivait encore en lecture seule.** Le test injecte tension95 au SMUR, passe Observateur, injecte tension70 : avant correction valeur70 observée, après correction95 conservée. `applyFills` relit le rôle courant au moment de l'événement. Aucun seuil/contenu clinique modifié.
 
-3. **En-tête/reset/scénarios en lecture seule** : l'observateur pouvait écrire les noms et les publier en salle, ou vider/remplacer le cas. `setHeader` filtre maintenant selon le rôle courant, les champs sont désactivés, et reset/démos relisent le rôle. Le player interrompt/restaure le cas lors d'une bascule observateur. L'observateur peut toujours rejoindre via le lien partagé et recevoir les changements, mais le polling ne publie jamais sous ce rôle. Une régression sur vrai Worker relit état/version inchangés après tentative, reçoit un changement distant, puis vérifie reprise des writes légitimes. La confirmation reset et les événements guidés tardifs sont aussi exercés.
+3. **En-tête/reset/scénarios en lecture seule** : l'observateur pouvait écrire les noms et les publier en salle, ou vider/remplacer le cas. `setHeader` filtre maintenant selon le rôle courant, les champs sont désactivés, et reset/démos relisent le rôle. Le player interrompt la lecture sans restaurer le cas (comportement main) lors d'une bascule observateur. L'observateur peut toujours rejoindre via le lien partagé et recevoir les changements, mais le polling ne publie jamais sous ce rôle. Une régression sur vrai Worker relit état/version inchangés après tentative, reçoit un changement distant, puis vérifie reprise des writes légitimes. Le reset immédiat et les événements guidés tardifs sont aussi exercés.
 4. **Plafond Worker UTF-8** : le serveur comparait `String.length` aux 300000 octets annoncés. La mémoire retenue est bornée par `Uint8Array.byteLength` pendant le stream avant décodage. Après dépassement, le reste est consommé sans accumulation avant la réponse413 : aucun `reader.cancel()` asynchrone ne reste actif après la réponse. Cette vidange évite le défaut de cycle de vie workerd observé localement ; elle attend toutefois la fin de l’envoi et ne borne pas le temps de traitement d’un émetteur arbitrairement lent. Un cas à110000 caractères `界` reçoit413 sans changer le stockage ; une petite charge Unicode valide réussit.
 
 ## Cartes protocolaires (source : actions.ts)
 
-Le test est piloté par l'inventaire importé depuis la configuration : tout ajout de carte éditable ou de sous-champ entre automatiquement dans la boucle correspondante. 61 cartes : 14 Régulation, 36 Pré-hospitalier, 11 Intra-hospitalier. « calculée » indique un rendu calculé et/ou critères détaillés : les formules complètes ne sont pas toutes réassertées au navigateur.
+Le test est piloté par l'inventaire importé depuis la configuration : tout ajout de carte éditable ou de sous-champ entre automatiquement dans la boucle correspondante. 65 cartes issues du main courant. Les constantes horodatées sont ajoutées deux fois (bouton/Entrée), persistées et leurs historiques détaillés relus ; main ne fournit pas de suppression des entrées. « calculée » indique un rendu calculé et/ou critères détaillés : les formules complètes ne sont pas toutes réassertées au navigateur.
 
 | Identifiant | Type | Couverture navigateur |
 |---|---|---|
@@ -55,47 +55,57 @@ Le test est piloté par l'inventaire importé depuis la configuration : tout ajo
 | `regul.tc.ctb` | checkbox | écriture + effacement + persistance |
 | `regul.tc.pediatrie` | checkbox | écriture + effacement + persistance |
 | `regul.orientation.destination` | select | écriture + effacement + persistance |
-| `regul.prealerte.centre` | checkbox | verrouillage + déblocage + écriture |
+| `regul.prealerte.centre` | checkbox | écriture + effacement + persistance |
 | `regul.prealerte.rea` | checkbox | écriture + effacement + persistance |
 | `regul.bloc.anticip` | checkbox | écriture + effacement + persistance |
-| `prehosp.x.hemostase` | checkbox | écriture + effacement + persistance |
-| `prehosp.a.lvas` | checkbox | écriture + effacement + persistance |
-| `prehosp.b.spo2` | number | écriture + effacement + persistance |
-| `prehosp.b.fr` | number | écriture + effacement + persistance |
+| `prehosp.x.hemostase` | select | écriture + effacement + persistance |
+| `prehosp.a.vas` | select | écriture + effacement + persistance |
+| `prehosp.b.spo2` | number | ajouts historiques + persistance |
+| `prehosp.b.fr` | number | ajouts historiques + persistance |
 | `prehosp.b.pneumothorax` | select | écriture + effacement + persistance |
-| `prehosp.c.pas` | number | écriture + effacement + persistance |
-| `prehosp.c.fc` | number | écriture + effacement + persistance |
-| `prehosp.c.hemocue` | number | écriture + effacement + persistance |
+| `prehosp.c.pas` | number | ajouts historiques + persistance |
+| `prehosp.c.fc` | number | ajouts historiques + persistance |
+| `prehosp.c.hemocue` | number | ajouts historiques + persistance |
 | `prehosp.c.traumabassin` | select | écriture + effacement + persistance |
 | `prehosp.c.fast` | select | écriture + effacement + persistance |
-| `prehosp.d.gcs` | number | écriture + effacement + persistance |
+| `prehosp.d.gcs` | number | ajouts historiques + persistance |
 | `prehosp.d.anisocorie` | checkbox | écriture + effacement + persistance |
-| `prehosp.d.glycemie` | number | écriture + effacement + persistance |
+| `prehosp.d.glycemie` | number | ajouts historiques + persistance |
+| `prehosp.d.deficit_neurologique` | select | écriture + effacement + persistance |
+| `prehosp.d.otorragie` | select | écriture + effacement + persistance |
 | `prehosp.e.hypothermie` | checkbox | écriture + effacement + persistance |
 | `prehosp.e.temperature` | number | écriture + effacement + persistance |
+| `prehosp.g.noradrenaline` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.garrot` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.vvp` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.isr` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.exsufflation` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.pelvien` | checkbox | écriture + effacement + persistance |
 | `prehosp.acsos` | checkbox | écriture + effacement + persistance |
+| `pam-tc` | number | ajouts historiques + persistance |
+| `pam-hemo` | number | ajouts historiques + persistance |
+| `capnie` | number | ajouts historiques + persistance |
+| `spo2` | number | écriture + effacement + persistance |
+| `hcue` | number | écriture + effacement + persistance |
+| `temperature` | number | écriture + effacement + persistance |
+| `glycemie` | number | écriture + effacement + persistance |
 | `prehosp.acr` | checkbox | écriture + effacement + persistance |
 | `regul.acr` | checkbox | écriture + effacement + persistance |
-| `prehosp.transport.evolution` | text | note ajout/suppression/persistance |
+| `prehosp.transport.evolution` | text | écriture + effacement + persistance |
 | `prehosp.g.expansion` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.antibioprophylaxie` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.octaplas` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.osmotherapie` | checkbox | écriture + effacement + persistance |
 | `prehosp.g.txa` | checkbox | écriture + effacement + persistance |
-| `prehosp.g.nad` | checkbox | zones/total/effacement/règle de déblocage |
-| `prehosp.brulures.remplissage` | checkbox | verrouillage + déblocage + écriture |
+| `prehosp.g.nad` | checkbox | écriture + effacement + persistance |
+| `prehosp.brulures.remplissage` | checkbox | écriture + effacement + persistance |
 | `prehosp.scores.shockindex` | computed | calculée / critères si présents |
 | `prehosp.scores.abc` | computed | calculée / critères si présents |
 | `prehosp.scores.batt` | computed | calculée / critères si présents |
 | `prehosp.scores.hemodynamique` | select | écriture + effacement + persistance |
 | `prehosp.scores.grade` | select | écriture + effacement + persistance |
 | `prehosp.transmission.bilan` | checkbox | écriture + effacement + persistance |
-| `intra.activation.equipe` | checkbox | verrouillage + déblocage + écriture |
+| `intra.activation.equipe` | checkbox | écriture + effacement + persistance |
 | `intra.imagerie.efast` | checkbox | écriture + effacement + persistance |
 | `intra.imagerie.rt` | checkbox | écriture + effacement + persistance |
 | `intra.imagerie.bassin` | checkbox | écriture + effacement + persistance |
@@ -107,8 +117,10 @@ Le test est piloté par l'inventaire importé depuis la configuration : tout ajo
 | `intra.bloc.arterio` | checkbox | écriture + effacement + persistance |
 | `intra.ctb.avis` | checkbox | écriture + effacement + persistance |
 
-### Régression du cycle de vie du flux Worker
+## Réconciliation main 6bb1239
 
-Le test API enchaîne exactement POST ASCII trop grand413 → POST UTF-8 trop grand413 → GET état/version inchangés → POST Unicode valide200 → GET nouvel état/version. Toutes les requêtes de cette séquence ont un délai client10s ; le log Wrangler est conservé sous `.e2e/logs/worker.log` et doit rester sans erreur de lecture après réponse. Chaque tentative utilise une salleUUID indépendante, y compris `--repeat-each`.
+22 tests navigateur, 5 fichiers. `current-main.e2e.ts` vérifie les historiques PAS 86→95→100, rechargement, prompt terminé après passage observateur (70 refusé), et six zones eFAST présent→absent→effacé puis lecture seule. Le test exhaustif des détails couvre aussi les anciennes valeurs numériques liées : elles ne doivent pas faire disparaître l’interface des nouveaux historiques.
 
-L’ancien `void reader.cancel()` suivi du retour413 pouvait provoquer une erreur workerd puis bloquer le GET suivant. La vidange avant réponse conserve au maximum300000 octets et libère les chunks dès dépassement ; elle ne conserve/décode jamais le surplus. Le temps d’attente dépend toujours de la fin du flux entrant. Les rapports upstream [workerd#918](https://github.com/cloudflare/workerd/issues/918) et [workers-sdk#15709](https://github.com/cloudflare/workers-sdk/issues/15709) décrivent un défaut apparenté ; aucun comportement Cloudflare distant n’est affirmé ici.
+Les tests unitaires upstream supprimés ne sont pas restaurés (39 tests actuels contre59 auparavant). Les règles ACSOS générées sont testées isolément : main a retiré leur installation dans le protocole. Aucun seuil ni règle clinique ajouté. Le parseur conserve les protections de mots entiers, décimales, nombres non tronqués et fenêtre entre champs ; une expression numérique plus spécifique (PAM) prime sur son préfixe générique (PAS).
+
+Les snapshots avec hash restent partageables ; les modifications actualisent le hash, ce qui évite qu’un reload restaure le snapshot précédent. Le reset est immédiat conformément à main. Dépendances produit React18/Vite5 et nouveaux composants conservés. `VITE_TEMPO_SYNC_URL` est la variable courante.

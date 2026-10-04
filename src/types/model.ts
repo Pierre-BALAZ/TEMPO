@@ -37,6 +37,11 @@ export interface SubField {
    * `parent::id`. Ex. la SpO₂ ou la température des ACSOS = celles du bilan XABCDE.
    */
   bindTo?: string
+  /**
+   * Si true, ce sous-champ numérique affiche un historique horodaté avec flèches de tendance
+   * (↑ en augmentation, ↓ en diminution). Permet de tracker l'évolution des constantes.
+   */
+  timestamped?: boolean
 }
 
 export interface GaugeSpec {
@@ -133,6 +138,11 @@ export interface ActionDef {
   lockedByDefault?: boolean
   /** Catégorie (icône de la timeline réduite + glyphe de la pastille). */
   category?: ActionCategory
+  /**
+   * Si true, cette action numérique affiche un historique horodaté avec flèches de tendance.
+   * Permet de tracker l'évolution des constantes (PAS, FC, SpO₂, FR, etc.).
+   */
+  timestamped?: boolean
 }
 
 /** Un « onglet » / section d'une piste (ex. BLOC, Transfusion massive) — peut clignoter. */
@@ -190,17 +200,11 @@ export interface RuleDef {
   then: Effect[]
 }
 
-/** Jalon temporel (minute depuis t0), affiché sur la partition et près du chrono. */
+/** Jalon (milestone) pour marquer les étapes du parcours. */
 export interface MilestoneDef {
   id: string
-  /** Minute depuis le début du cas. */
-  atMin: number
-  /** Étiquette de la ligne verticale sur la timeline (ex. « 60 min »). */
   label: string
-  /** Badge clignotant près du chrono une fois le jalon franchi (ex. « Golden hour »). */
-  badge?: string
-  /** Bip sonore au franchissement (uniquement s'il est observé en direct). */
-  chime?: boolean
+  trackId: string
 }
 
 export interface Protocol {
@@ -222,7 +226,7 @@ export interface ValueEntry {
   value: ActionValue
   /** Horodatage du passage à « fait / rempli » (epoch ms). */
   completedAt?: number
-  /** Horodatage de la DERNIÈRE modification (epoch ms) — sert au LWW de la synchro. */
+  /** Horodatage de la dernière mise à jour (epoch ms). */
   updatedAt?: number
 }
 
@@ -238,8 +242,6 @@ export interface CaseHeader {
   caseStartedAt: number
   /** Horodatage d'arrêt du chrono (epoch ms) — posé par l'équipe intra-hosp. */
   chronoStoppedAt?: number
-  /** Cumul des périodes d'arrêt du chrono (ms) — la reprise ne re-compte pas l'arrêt. */
-  chronoPausedMs?: number
 }
 
 export interface CaseState {

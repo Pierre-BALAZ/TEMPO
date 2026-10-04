@@ -47,8 +47,8 @@ export function DerivedCriteria({ action }: { action: ActionDef }) {
           </li>
         ))}
       </ul>
-      <p className="text-pretty text-[11px] text-slate-500">
-        Ces critères se cochent d’eux-mêmes&nbsp;: ils suivent les valeurs du bilan.
+      <p className="text-[11px] text-slate-400">
+        Ces critères se cochent d’eux-mêmes : ils suivent les valeurs du bilan.
       </p>
     </div>
   )

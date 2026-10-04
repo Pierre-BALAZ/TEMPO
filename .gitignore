@@ -5,7 +5,6 @@ dist-ssr
 .DS_Store
 .vite
 partition-urgence.html
-.wrangler
 
-# tester-army browser artifacts
+.wrangler
 .e2e/
