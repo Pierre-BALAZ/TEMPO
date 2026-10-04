@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useCaseStore } from '../store/caseStore'
+import { caseSignature, isCaseLike, mergeCases } from '../sync/merge'
 
 const CHANNEL = 'balaz-sync-v1'
 
@@ -39,10 +40,22 @@ export function useBroadcastSync(): boolean {
     // Applique les changements reçus des autres fenêtres (sans les re-diffuser).
     channel.onmessage = (event: MessageEvent<SyncMessage>) => {
       const msg = event.data
-      if (!msg || msg.from === sessionId || !msg.caseState) return
+      if (!msg || msg.from === sessionId || !isCaseLike(msg.caseState)) return
       applyingRemote = true
-      useCaseStore.getState().loadCase(msg.caseState)
-      applyingRemote = false
+      try {
+        const local = useCaseStore.getState().caseState
+        if (msg.caseState.header.caseStartedAt !== local.header.caseStartedAt) {
+          // Autre cas (reset, démo, chargement) : remplacement intégral.
+          useCaseStore.getState().loadCase(msg.caseState)
+        } else {
+          // Même cas : fusion champ par champ pour ne pas perdre les saisies
+          // concurrentes de cette fenêtre (dernier-message-gagnant ≠ fusion).
+          const merged = mergeCases(local, msg.caseState)
+          if (caseSignature(merged) !== caseSignature(local)) {
+            useCaseStore.getState().loadCase(merged)
+          }
+        }
+      } finally { applyingRemote = false }
     }
 
     return () => {

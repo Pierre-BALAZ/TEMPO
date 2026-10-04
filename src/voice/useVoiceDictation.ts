@@ -3,6 +3,7 @@ import { activeProtocol, actionIndex } from '../config'
 import { evaluate } from '../engine/evaluate'
 import { isFilledValue } from '../lib/case'
 import { useCaseStore } from '../store/caseStore'
+import { canEditTrack, useUiStore } from '../store/uiStore'
 import {
   cancelSpeech,
   getSpeechRecognitionCtor,
@@ -85,6 +86,13 @@ export function useVoiceDictation(): VoiceApi {
   const applyFills = useCallback(
     (fills: VoiceFill[], asCorrection: boolean) => {
       if (fills.length === 0) return
+      // Read the current role when the transcript arrives: recognition can
+      // remain active after a role switch, and queued events must stay read-only.
+      const ui = useUiStore.getState()
+      if (!canEditTrack(ui.activeRole, ui.roleChosen, 'prehosp')) {
+        setError('Dictée en lecture seule : choisissez le rôle SMUR / VSAV pour saisir.')
+        return
+      }
       const setValue = useCaseStore.getState().setValue
       for (const f of fills) setValue(f.actionId, f.value)
       // fusionne : une seule entrée par action (la dernière l'emporte)

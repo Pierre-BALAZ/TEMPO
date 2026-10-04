@@ -19,6 +19,7 @@ import { RoleGate } from './components/RoleGate'
 import { Stopwatch } from './components/Stopwatch'
 import { useCaseStore } from './store/caseStore'
 import { useUiStore } from './store/uiStore'
+import { writeCaseToHash, readCaseFromHash } from './share/urlState'
 import { saveCase } from './share/persistence'
 import { useBroadcastSync } from './hooks/useBroadcastSync'
 
@@ -34,6 +35,7 @@ export default function App() {
   // Ici on se contente de persister localement à chaque modification.
   useEffect(() => {
     saveCase(caseState)
+    if (readCaseFromHash()) writeCaseToHash(caseState)
   }, [caseState])
 
   return (

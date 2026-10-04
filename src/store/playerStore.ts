@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { guidedSteps } from '../config/guidedScenario'
+import { canEditCase } from './uiStore'
 import { useCaseStore } from './caseStore'
 
 export type PlayerStatus = 'idle' | 'playing' | 'paused' | 'finished'
@@ -35,6 +36,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
 
   play: () =>
     set((s) => {
+      if (!canEditCase()) return s
       if (s.status === 'idle' || s.status === 'finished') {
         useCaseStore.getState().reset()
         return { status: 'playing', index: 0, activeActionId: null }
@@ -45,6 +47,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   pause: () => set({ status: 'paused' }),
 
   restart: () => {
+    if (!canEditCase()) return
     useCaseStore.getState().reset()
     set({ status: 'playing', index: 0, activeActionId: null })
   },

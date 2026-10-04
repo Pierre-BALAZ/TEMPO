@@ -46,34 +46,35 @@ describe('buildGaugeRules', () => {
   })
 })
 
-describe('règles ACSOS intégrées au protocole', () => {
+describe('règles ACSOS générées isolément (main ne les installe plus dans le protocole)', () => {
+  const gaugeProtocol = { ...polytraumaProtocol, rules: buildGaugeRules(ACSOS) }
   it('SpO₂ du bilan < 90 → la pastille ACSOS clignote', () => {
-    const derived = evaluate(polytraumaProtocol, caseWith({ 'prehosp.b.spo2': 85 }))
+    const derived = evaluate(gaugeProtocol, caseWith({ 'prehosp.b.spo2': 85 }))
     expect(derived['prehosp.acsos']?.blink).toBe(true)
   })
 
   it('SpO₂ normale → pas d’alerte ACSOS', () => {
-    const derived = evaluate(polytraumaProtocol, caseWith({ 'prehosp.b.spo2': 97 }))
+    const derived = evaluate(gaugeProtocol, caseWith({ 'prehosp.b.spo2': 97 }))
     expect(derived['prehosp.acsos']?.blink).toBeUndefined()
   })
 
   it('valeur absente → pas d’alerte (garde « filled » : null vaudrait 0 en lt)', () => {
-    const derived = evaluate(polytraumaProtocol, caseWith({}))
+    const derived = evaluate(gaugeProtocol, caseWith({}))
     expect(derived['prehosp.acsos']?.blink).toBeUndefined()
   })
 
   it('capnie saisie dans le panneau ACSOS hors zone → alerte', () => {
-    const derived = evaluate(polytraumaProtocol, caseWith({ 'prehosp.acsos::capnie': 55 }))
+    const derived = evaluate(gaugeProtocol, caseWith({ 'prehosp.acsos::capnie': 55 }))
     expect(derived['prehosp.acsos']?.blink).toBe(true)
   })
 
   it('capnie en zone normale → pas d’alerte', () => {
-    const derived = evaluate(polytraumaProtocol, caseWith({ 'prehosp.acsos::capnie': 40 }))
+    const derived = evaluate(gaugeProtocol, caseWith({ 'prehosp.acsos::capnie': 40 }))
     expect(derived['prehosp.acsos']?.blink).toBeUndefined()
   })
 
   it('température liée (bindTo) hors zone → alerte hypothermie', () => {
-    const derived = evaluate(polytraumaProtocol, caseWith({ 'prehosp.e.temperature': 34.5 }))
+    const derived = evaluate(gaugeProtocol, caseWith({ 'prehosp.e.temperature': 34.5 }))
     expect(derived['prehosp.acsos']?.blink).toBe(true)
   })
 })

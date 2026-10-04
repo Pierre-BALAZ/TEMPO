@@ -85,3 +85,19 @@ export const useUiStore = create<UiStore>((set) => ({
 export function canEditTrack(role: Role, roleChosen: boolean, trackId: TrackId): boolean {
   return roleChosen && role === trackId
 }
+
+/** Les opérations globales du cas sont réservées à un rôle éditeur choisi. */
+export function canEditCase(): boolean {
+  const { activeRole, roleChosen } = useUiStore.getState()
+  return roleChosen && activeRole !== 'observer'
+}
+
+/** Chaque intervenant renseigne son propre en-tête ; le nom de code est commun. */
+export function canEditHeader(field: string): boolean {
+  const { activeRole, roleChosen } = useUiStore.getState()
+  if (!roleChosen || activeRole === 'observer') return false
+  if (field === 'regulateurName') return activeRole === 'regul'
+  if (field === 'smurName') return activeRole === 'prehosp'
+  if (field === 'serviceReceveur' || field.startsWith('chrono')) return activeRole === 'intra'
+  return true
+}

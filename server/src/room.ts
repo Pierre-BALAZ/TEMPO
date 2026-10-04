@@ -49,10 +49,38 @@ export class TempoRoom {
     }
 
     // POST
-    const body = await request.text()
-    if (body.length > MAX_BODY_BYTES) {
+    // Bound retained bytes, then fully consume the request before responding.
+    // workerd Durable Objects must not leave an unread/cancelling request stream
+    // behind a response: that can invalidate the next request on the connection.
+    const reader = request.body?.getReader()
+    const chunks: Uint8Array[] = []
+    let total = 0
+    let oversized = false
+    if (reader) {
+      try {
+        while (true) {
+          const { value, done } = await reader.read()
+          if (done) break
+          if (oversized) continue // drain without retaining or decoding excess bytes
+          if (value.byteLength > MAX_BODY_BYTES - total) {
+            oversized = true
+            chunks.length = 0
+            continue
+          }
+          total += value.byteLength
+          chunks.push(value)
+        }
+      } finally {
+        reader.releaseLock()
+      }
+    }
+    if (oversized) {
       return Response.json({ error: 'payload trop volumineux' }, { status: 413 })
     }
+    const bytes = new Uint8Array(total)
+    let offset = 0
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength }
+    const body = new TextDecoder().decode(bytes)
     let payload: unknown = null
     try {
       payload = JSON.parse(body)

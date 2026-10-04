@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AppWindow, Check, FileDown, Link2, MessageCircle, RotateCcw } from 'lucide-react'
+import { canEditCase, useUiStore } from '../store/uiStore'
 import { useCaseStore } from '../store/caseStore'
 import { buildShareUrl, writeCaseToHash } from '../share/urlState'
 import { clearCase } from '../share/persistence'
@@ -7,6 +8,7 @@ import { activeProtocol } from '../config'
 import { exportCasePdf } from '../lib/pdf'
 
 export function ShareBar() {
+  const editable = useUiStore(() => canEditCase())
   const caseState = useCaseStore((s) => s.caseState)
   const reset = useCaseStore((s) => s.reset)
   const [copied, setCopied] = useState(false)
@@ -37,6 +39,7 @@ export function ShareBar() {
   }
 
   const onReset = () => {
+    if (!canEditCase()) return
     clearCase()
     reset()
     history.replaceState(null, '', window.location.pathname)
@@ -79,6 +82,7 @@ export function ShareBar() {
       </button>
       <button
         type="button"
+        disabled={!editable}
         onClick={onReset}
         className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
       >

@@ -9,7 +9,7 @@ interface HistoryEntry {
 interface Props {
   label: string
   unit?: string
-  currentValue: string | null
+  currentValue: string | number | null
   onAddValue: (value: number, timestamp: number) => void
   editable: boolean
 }
@@ -26,8 +26,10 @@ export function TimestampedValueHistory({
   editable,
 }: Props) {
   // Parser l'historique
-  const parseHistory = (raw: string | null): HistoryEntry[] => {
-    if (!raw) return []
+  const parseHistory = (raw: string | number | null): HistoryEntry[] => {
+    if (raw == null) return []
+    // Older cases and bound non-history fields can contain a numeric scalar.
+    if (typeof raw === 'number') return Number.isFinite(raw) ? [{ timestamp: 0, value: raw }] : []
     return raw
       .split('|')
       .map((entry) => {

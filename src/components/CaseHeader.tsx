@@ -1,6 +1,7 @@
 import { Radio, Truck, Building2, Music2, Shuffle } from 'lucide-react'
 import type { CaseHeader as CaseHeaderType } from '../types/model'
 import { useCaseStore } from '../store/caseStore'
+import { canEditHeader, useUiStore } from '../store/uiStore'
 import { randomComposer } from '../lib/codename'
 
 interface FieldProps {
@@ -12,6 +13,7 @@ interface FieldProps {
 }
 
 function IntervenantTab({ icon, label, field, placeholder, accent }: FieldProps) {
+  const editable = useUiStore(() => canEditHeader(field))
   const value = useCaseStore((s) => s.caseState.header[field])
   const setHeader = useCaseStore((s) => s.setHeader)
   return (
@@ -21,6 +23,7 @@ function IntervenantTab({ icon, label, field, placeholder, accent }: FieldProps)
       </span>
       <input
         type="text"
+        disabled={!editable}
         value={(value as string) ?? ''}
         placeholder={placeholder}
         onChange={(e) => setHeader({ [field]: e.target.value || undefined })}
@@ -31,6 +34,7 @@ function IntervenantTab({ icon, label, field, placeholder, accent }: FieldProps)
 }
 
 function PatientTab() {
+  const editable = useUiStore(() => canEditHeader('patientCodename'))
   const codename = useCaseStore((s) => s.caseState.header.patientCodename)
   const setHeader = useCaseStore((s) => s.setHeader)
   return (
@@ -40,6 +44,7 @@ function PatientTab() {
       </span>
       <input
         type="text"
+        disabled={!editable}
         value={codename ?? ''}
         placeholder="Nom de code (ex. Chopin, 314…)"
         onChange={(e) => setHeader({ patientCodename: e.target.value || undefined })}
@@ -47,7 +52,8 @@ function PatientTab() {
       />
       <button
         type="button"
-        onClick={() => setHeader({ patientCodename: randomComposer(codename) })}
+        disabled={!editable}
+        onClick={() => { if (canEditHeader('patientCodename')) setHeader({ patientCodename: randomComposer(codename) }) }}
         title="Tirer un autre nom de compositeur"
         className="flex shrink-0 items-center gap-1 rounded-md border border-indigo-200 bg-white/70 px-2 py-1 text-xs font-medium text-indigo-700 hover:bg-white"
       >
