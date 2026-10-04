@@ -1,3 +1,4 @@
+import { isCaseLike } from '../sync/merge'
 import type { CaseState } from '../types/model'
 
 const STORAGE_KEY = 'balaz.case.v1'
@@ -15,7 +16,7 @@ export function loadCase(): CaseState | null {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as CaseState
-    return parsed?.values && parsed?.header ? parsed : null
+    return isCaseLike(parsed) ? parsed : null
   } catch {
     return null
   }

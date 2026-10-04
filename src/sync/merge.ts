@@ -24,7 +24,7 @@ function mergeValues(
   const out: Record<string, ValueEntry> = { ...local }
   for (const k of Object.keys(remote)) {
     const r = remote[k]
-    const l = out[k]
+    const l = Object.prototype.hasOwnProperty.call(out, k) ? out[k] : undefined
     if (!l || stamp(r) > stamp(l)) out[k] = r
   }
   return out
@@ -43,18 +43,32 @@ function mergeHeader(local: CaseHeader, remote: CaseHeader): CaseHeader {
 }
 
 /** Garde structurelle : un état distant malformé ne doit jamais entrer dans la fusion. */
+const reserved = new Set(['__proto__', 'prototype', 'constructor'])
+function record(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value) &&
+    Object.keys(value).every(key => !reserved.has(key))
+}
+function finite(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value)
+}
 export function isCaseLike(c: unknown): c is CaseState {
-  if (!c || typeof c !== 'object') return false
-  const o = c as Record<string, unknown>
-  return (
-    typeof o.header === 'object' &&
-    o.header !== null &&
-    typeof o.values === 'object' &&
-    o.values !== null
-  )
+  if (!record(c) || typeof c.protocolId !== 'string' || !record(c.header) || !record(c.values)) return false
+  if (!finite(c.header.caseStartedAt)) return false
+  for (const [key, value] of Object.entries(c.header)) {
+    if (key === 'caseStartedAt' || key === 'chronoStoppedAt') {
+      if (value !== undefined && !finite(value)) return false
+    } else if (value !== undefined && typeof value !== 'string') return false
+  }
+  return Object.values(c.values).every(entry => {
+    if (!record(entry) || !Object.prototype.hasOwnProperty.call(entry, 'value')) return false
+    const value = entry.value
+    if (value !== null && typeof value !== 'string' && typeof value !== 'boolean' && !finite(value)) return false
+    return ['updatedAt', 'completedAt'].every(key => entry[key] === undefined || finite(entry[key]))
+  })
 }
 
 export function mergeCases(local: CaseState, remote: CaseState): CaseState {
+  if (!isCaseLike(remote)) return local
   return {
     protocolId: local.protocolId,
     header: mergeHeader(local.header, remote.header),

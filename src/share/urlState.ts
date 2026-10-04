@@ -1,7 +1,9 @@
 import LZString from 'lz-string'
+import { isCaseLike } from '../sync/merge'
 import type { CaseState } from '../types/model'
 
 const HASH_KEY = 's'
+const FAILED_HASH_KEY = 'balaz.failed-hash.v1'
 
 /** Sérialise l'état du cas (compressé) dans un fragment d'URL — aucun backend requis. */
 export function encodeCase(caseState: CaseState): string {
@@ -13,7 +15,7 @@ export function decodeCase(encoded: string): CaseState | null {
     const json = LZString.decompressFromEncodedURIComponent(encoded)
     if (!json) return null
     const parsed = JSON.parse(json) as CaseState
-    if (!parsed || typeof parsed !== 'object' || !parsed.values || !parsed.header) return null
+    if (!isCaseLike(parsed)) return null
     return parsed
   } catch {
     return null
@@ -28,6 +30,9 @@ export function buildShareUrl(caseState: CaseState): string {
 
 /** Lit l'état éventuellement encodé dans l'URL au chargement. */
 export function readCaseFromHash(): CaseState | null {
+  // A refused History update leaves an old snapshot in the address bar.
+  // Prefer the already persisted fresh case on this tab's immediate reload.
+  try { if (sessionStorage.getItem(FAILED_HASH_KEY) === window.location.hash) return null } catch { /* unavailable */ }
   const hash = window.location.hash.replace(/^#/, '')
   if (!hash) return null
   const params = new URLSearchParams(hash)
@@ -38,5 +43,10 @@ export function readCaseFromHash(): CaseState | null {
 /** Met à jour l'URL sans recharger (pour garder le lien synchronisé). */
 export function writeCaseToHash(caseState: CaseState): void {
   const encoded = encodeCase(caseState)
-  history.replaceState(null, '', `#${HASH_KEY}=${encoded}`)
+  try {
+    history.replaceState(null, '', `#${HASH_KEY}=${encoded}`)
+    try { sessionStorage.removeItem(FAILED_HASH_KEY) } catch { /* unavailable */ }
+  } catch {
+    try { sessionStorage.setItem(FAILED_HASH_KEY, window.location.hash) } catch { /* unavailable */ }
+  }
 }

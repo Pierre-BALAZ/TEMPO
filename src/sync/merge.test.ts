@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { CaseState } from '../types/model'
-import { caseSignature, mergeCases } from './merge'
+import { caseSignature, isCaseLike, mergeCases } from './merge'
 
 function makeCase(partial?: Partial<CaseState>): CaseState {
   return {
@@ -92,5 +92,24 @@ describe('caseSignature', () => {
     const c = makeCase({ values: { 'a.un': { value: 3, completedAt: 1 } } })
     expect(caseSignature(a)).not.toBe(caseSignature(b))
     expect(caseSignature(a)).not.toBe(caseSignature(c))
+  })
+})
+
+
+describe('untrusted case entries', () => {
+  it('rejects null/array entries, nonfinite values and timestamps but accepts legacy numbers and tombstones', () => {
+    for (const entry of [null, [], { value: {} }, { value: NaN }, { value: true, updatedAt: 'bad' }]) {
+      expect(isCaseLike(makeCase({ values: { 'prehosp.c.pas': entry as never } }))).toBe(false)
+    }
+    expect(isCaseLike(makeCase({ values: { 'prehosp.c.pas': { value: 86 }, 'a.deleted': { value: null, updatedAt: 12 } } }))).toBe(true)
+  })
+  it('prototype-bearing JSON cannot alter merged values or headers', () => {
+    const local = makeCase()
+    for (const section of ['values', 'header']) {
+      const remote = JSON.parse(JSON.stringify(local).replace('"values":{}', section === 'values' ? '"values":{"__proto__":{"value":true,"updatedAt":9999}}' : '"values":{}').replace('"caseStartedAt":1000', section === 'header' ? '"caseStartedAt":1000,"__proto__":{"polluted":true}' : '"caseStartedAt":1000'))
+      expect(isCaseLike(remote)).toBe(false)
+      expect(mergeCases(local, remote)).toBe(local)
+      expect(Object.getPrototypeOf(local.values)).toBe(Object.prototype)
+    }
   })
 })

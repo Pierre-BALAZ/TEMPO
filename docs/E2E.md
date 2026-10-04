@@ -119,8 +119,18 @@ Le test est piloté par l'inventaire importé depuis la configuration : tout ajo
 
 ## Réconciliation main 6bb1239
 
-23 tests navigateur, 5 fichiers. `current-main.e2e.ts` vérifie les historiques PAS 86→95→100, rechargement, prompt terminé après passage observateur (70 refusé), et six zones eFAST présent→absent→effacé puis lecture seule. Le test permanent legacy enregistre une PAS numérique86 dans localStorage, recharge puis ouvre le détail :86 et1valeur doivent être visibles, et la valeur persistée doit rester le nombre86 (pas une chaîne). La suppression de la garde numérique fait échouer ce test dans une copie isolée.
+26 tests navigateur, 6 fichiers. `current-main.e2e.ts` vérifie les historiques PAS 86→95→100, rechargement, prompt terminé après passage observateur (70 refusé), et six zones eFAST présent→absent→effacé puis lecture seule. Le test permanent legacy enregistre une PAS numérique86 dans localStorage, recharge puis ouvre le détail :86 et1valeur doivent être visibles, et la valeur persistée doit rester le nombre86 (pas une chaîne). La suppression de la garde numérique fait échouer ce test dans une copie isolée.
 
 Les tests unitaires upstream supprimés ne sont pas restaurés (39 tests actuels contre59 auparavant). Les règles ACSOS générées sont testées isolément : main a retiré leur installation dans le protocole. Aucun seuil ni règle clinique ajouté. Le parseur conserve les protections de mots entiers, décimales, nombres non tronqués et fenêtre entre champs ; une expression numérique plus spécifique (PAM) prime sur son préfixe générique (PAS).
 
 Les snapshots avec hash restent partageables ; les modifications actualisent le hash, ce qui évite qu’un reload restaure le snapshot précédent. Le reset est immédiat conformément à main. Dépendances produit React18/Vite5 et nouveaux composants conservés. `VITE_TEMPO_SYNC_URL` est la variable courante.
+
+## Retours revue PR49 : état partagé et History API
+
+`shared-state.e2e.ts` ajoute trois oracles : après message BroadcastChannel contenant une entrée null, la saisie suivante est réellement reçue par le pair et le cas persistant reste sain ; un hash compressé et localStorage malformés retombent sur un cas utilisable ; un SecurityError contrôlé sur replaceState laisse la saisie visible et la conserve après reload immédiat. La mutation isolée rétablissant les anciens handlers fait échouer les trois.
+
+La même garde structurelle valide hash, localStorage, salle et broadcast : objets non tableaux, protocole/horodatages/en-tête, valeurs primitives finies ou tombstones ; __proto__/constructor/prototype refusés. Les unités vérifient notamment PAS numérique86 compatible et absence de changement du prototype lors d’une tentative de fusion JSON. Le callback broadcast libère toujours son drapeau en finally.
+
+Si History refuse un changement, un marqueur sessionStorage du hash ancien empêche ce snapshot de remplacer le local frais au reload dans le même onglet ; une écriture de hash réussie efface ce marqueur. Cela ne simule pas une limite Safari réelle. Si localStorage/sessionStorage sont tous deux indisponibles, leur garantie de persistance reste indisponible comme pour le reste du prototype.
+
+Le workflow utilise Node22 conformément à engines>=22.12 ; aucun déploiement déclenché. setValueAt reste utilisable sur toutes les pistes par un éditeur choisi : c’est le replay guidé multi-pistes, avec garde observateur au moment d’appliquer. Pas d’authentification serveur introduite. Le drainage Worker reste inchangé, avec la limite mémoire et le temps de drainage documentés.
