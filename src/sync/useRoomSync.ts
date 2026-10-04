@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { canEditCase } from '../store/uiStore'
 import { useCaseStore } from '../store/caseStore'
 import { caseSignature, isCaseLike, mergeCases } from './merge'
 import { fetchRoom, pushRoom } from './roomSync'
@@ -31,13 +32,15 @@ export function useRoomSync(enabled: boolean, serverUrl: string, roomCode: strin
         let merged = local
         const remoteOk = isCaseLike(remote.case)
         if (remoteOk) {
-          merged = mergeCases(local, remote.case as NonNullable<typeof remote.case>)
+          merged = canEditCase()
+            ? mergeCases(local, remote.case as NonNullable<typeof remote.case>)
+            : remote.case as NonNullable<typeof remote.case>
           if (caseSignature(merged) !== caseSignature(local)) {
             useCaseStore.getState().loadCase(merged)
           }
         }
         // Pousser si le serveur est vide, malformé, ou en retard sur nous.
-        if (!remoteOk || caseSignature(remote.case as NonNullable<typeof remote.case>) !== caseSignature(merged)) {
+        if (!ac.signal.aborted && canEditCase() && (!remoteOk || caseSignature(remote.case as NonNullable<typeof remote.case>) !== caseSignature(merged))) {
           await pushRoom(serverUrl, roomCode, merged, ac.signal)
         }
         if (!stopRef.current) {

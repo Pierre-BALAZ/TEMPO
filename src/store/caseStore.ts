@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { ActionValue, CaseHeader, CaseState } from '../types/model'
 import { createEmptyCase, isFilledValue } from '../lib/case'
+import { canEditCase, canEditHeader } from './uiStore'
 import { activeProtocol } from '../config'
 import { readCaseFromHash } from '../share/urlState'
 import { loadCase as loadSaved } from '../share/persistence'
@@ -51,11 +52,13 @@ export const useCaseStore = create<CaseStore>((set) => ({
     }),
 
   setHeader: (patch) =>
-    set((state) => ({
-      caseState: { ...state.caseState, header: { ...state.caseState.header, ...patch } },
-    })),
+    set((state) => {
+      const permitted = Object.fromEntries(Object.entries(patch).filter(([key]) => canEditHeader(key)))
+      if (!Object.keys(permitted).length) return state
+      return { caseState: { ...state.caseState, header: { ...state.caseState.header, ...permitted } } }
+    }),
 
   loadCase: (caseState) => set({ caseState }),
 
-  reset: () => set({ caseState: createEmptyCase(activeProtocol.id, Date.now()) }),
+  reset: () => { if (canEditCase()) set({ caseState: createEmptyCase(activeProtocol.id, Date.now()) }) },
 }))

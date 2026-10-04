@@ -76,7 +76,7 @@ export function ActionDetailPanel() {
         {action.type === 'computed' && <DerivedCriteria action={action} />}
 
         {groups.length > 0 && (
-          <div className="flex flex-col gap-4">
+          <fieldset disabled={!editable} className="flex flex-col gap-4">
             {groups.map((g, gi) => (
               <div key={g.group ?? gi} className="flex flex-col gap-2">
                 {g.group && (
@@ -91,13 +91,13 @@ export function ActionDetailPanel() {
                       key={sf.id}
                       subField={sf}
                       value={values[key]?.value ?? null}
-                      onChange={(v) => setValue(key, v)}
+                      onChange={(v) => { if (editable) setValue(key, v) }}
                     />
                   )
                 })}
               </div>
             ))}
-          </div>
+          </fieldset>
         )}
 
         {action.detail?.references && action.detail.references.length > 0 && (

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { CaseState } from '../types/model'
 import { guidedSteps } from '../config/guidedScenario'
+import { canEditCase } from './uiStore'
 import { useCaseStore } from './caseStore'
 
 /** Cas réel mis de côté pendant la démo guidée, restauré à la sortie
@@ -40,6 +41,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
 
   play: () =>
     set((s) => {
+      if (!canEditCase()) return s
       if (s.status === 'idle' || s.status === 'finished') {
         // On met le cas réel de côté avant de le remplacer par le cas de démo.
         if (s.status === 'idle') savedBeforeDemo = useCaseStore.getState().caseState
@@ -52,6 +54,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   pause: () => set({ status: 'paused' }),
 
   restart: () => {
+    if (!canEditCase()) return
     useCaseStore.getState().reset()
     set({ status: 'playing', index: 0, activeActionId: null })
   },

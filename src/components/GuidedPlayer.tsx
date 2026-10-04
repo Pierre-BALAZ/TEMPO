@@ -3,7 +3,7 @@ import { Pause, Play, RotateCcw, Volume2, VolumeX, X } from 'lucide-react'
 import { GUIDED_BASE_MS, guidedSteps, speechRate, spokenText } from '../config/guidedScenario'
 import { cancelSpeech, isSynthesisSupported, speak } from '../voice/speech'
 import { useCaseStore } from '../store/caseStore'
-import { useUiStore } from '../store/uiStore'
+import { canEditCase, useUiStore } from '../store/uiStore'
 import { usePlayerStore } from '../store/playerStore'
 import type { ActionValue } from '../types/model'
 
@@ -11,6 +11,7 @@ const SPEEDS = [0.5, 1, 2]
 const ttsSupported = isSynthesisSupported()
 
 export function GuidedPlayer() {
+  const editable = useUiStore(() => canEditCase())
   const status = usePlayerStore((s) => s.status)
   const index = usePlayerStore((s) => s.index)
   const speed = usePlayerStore((s) => s.speed)
@@ -42,6 +43,10 @@ export function GuidedPlayer() {
   // met en évidence l'action, la fait défiler, LIT la narration à voix haute, puis
   // passe à la suivante quand la voix se termine (ou après un délai si voix coupée).
   useEffect(() => {
+    if (!canEditCase() && status !== 'idle') {
+      exit()
+      return
+    }
     if (status !== 'playing') {
       cancelSpeech()
       return
@@ -104,7 +109,7 @@ export function GuidedPlayer() {
       if (doneTimer) clearTimeout(doneTimer)
       if (safetyTimer) clearTimeout(safetyTimer)
     }
-  }, [status, index, setValueAt, setActive, setIndex, finish, setLayout, setRecapOpen, setVoicePanelOpen])
+  }, [editable, exit, status, index, setValueAt, setActive, setIndex, finish, setLayout, setRecapOpen, setVoicePanelOpen])
 
   // Referme les panneaux quand on quitte la démo.
   useEffect(() => {
@@ -118,6 +123,7 @@ export function GuidedPlayer() {
     return (
       <button
         type="button"
+        disabled={!editable}
         onClick={play}
         title={
           ttsSupported

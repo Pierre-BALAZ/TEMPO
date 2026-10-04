@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
  *  transition CSS de la jauge (.hold-fill-active) via style.transitionDuration. */
 const HOLD_MS = 2000
 import { AppWindow, Check, FileDown, Link2, MessageCircle, RotateCcw } from 'lucide-react'
+import { canEditCase, useUiStore } from '../store/uiStore'
 import { useCaseStore } from '../store/caseStore'
 import { buildShareUrl } from '../share/urlState'
 import { clearCase } from '../share/persistence'
@@ -11,6 +12,7 @@ import { activeProtocol } from '../config'
 import { exportCasePdf } from '../lib/pdf'
 
 export function ShareBar() {
+  const editable = useUiStore(() => canEditCase())
   const caseState = useCaseStore((s) => s.caseState)
   const reset = useCaseStore((s) => s.reset)
   const [copied, setCopied] = useState(false)
@@ -42,6 +44,7 @@ export function ShareBar() {
   }
 
   const onReset = () => {
+    if (!canEditCase()) return
     clearCase()
     reset()
     history.replaceState(null, '', window.location.pathname)
@@ -55,6 +58,7 @@ export function ShareBar() {
   const holdTimer = useRef<number | undefined>(undefined)
   const holdDone = useRef(false)
   const startHold = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (!canEditCase()) return
     if (e.button !== 0 || !e.isPrimary) return
     holdDone.current = false
     setHolding(true)
@@ -77,6 +81,7 @@ export function ShareBar() {
     }
   }
   const onResetClick = () => {
+    if (!canEditCase()) return
     // Un hold complété émet aussi un click : ne pas re-confirmer derrière.
     if (holdDone.current) {
       holdDone.current = false
@@ -137,6 +142,7 @@ export function ShareBar() {
       </button>
       <button
         type="button"
+        disabled={!editable}
         onPointerDown={startHold}
         onPointerUp={cancelHold}
         onPointerLeave={cancelHold}

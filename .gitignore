@@ -6,3 +6,6 @@ dist-ssr
 .vite
 partition-urgence.html
 .wrangler
+
+# tester-army browser artifacts
+.e2e/
